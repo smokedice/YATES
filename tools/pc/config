@@ -1,0 +1,6 @@
+user=root
+password=root
+tmpdir=/tmp
+envserver=
+envserverport=
+rebootcmd=reboot

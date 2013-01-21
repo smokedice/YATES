@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="reactions" xmlns:ns1="reactions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:element name="reactions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ns1:reaction"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="reaction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:pattern"/>
+        <xs:element ref="ns1:effect"/>
+      </xs:sequence>
+      <xs:attribute name="content" type="xs:NCName"/>
+      <xs:attribute name="related" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pattern" type="xs:NCName"/>
+  <xs:element name="effect">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" ref="ns1:peerstate"/>
+        <xs:element minOccurs="0" maxOccurs="1" ref="ns1:graceperiod"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="peerstate">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="ACTIVE" />
+        <xs:enumeration value="DEAD" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="graceperiod">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minInclusive value="0" />
+        <xs:maxInclusive value="36000" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>

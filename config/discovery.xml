@@ -1,0 +1,15 @@
+<discovery
+    xmlns="discovery"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="discovery validation/discovery.xsd">
+    <PythonNose enabled="true">
+        <DiscoveryWorker enabled="true" />
+        <DatabaseReader enabled="false">
+            <location>./master.sqlite3</location>
+        </DatabaseReader>
+        <SourceLocation>
+            <testRoot>/home/smoky/Documents/Workspace/TASv3/Code/tests/HWIntegration/tests/quickTests/tests</testRoot>
+            <testPath>oem_tests</testPath>
+        </SourceLocation>
+    </PythonNose>
+</discovery>

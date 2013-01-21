@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Check all slaves exist before distribution
+while IFS=$' ' read -r -a details; do
+if [[  $details =~ ^# ]]; then continue; fi
+
+IFS=' ' read -a dArray <<< `echo $details | awk ' { gsub(/[@:]/, " ", $0); print $0 } ' `
+ip=${dArray[0]}
+nc -zv -w1 $ip 22 &>/dev/null
+
+if [ $? != 0 ]; then
+    echo "$ip is not alive!"
+    exit 1
+fi
+done < $1
+
+while IFS=$' ' read -r -a details; do
+if [[  $details =~ ^# ]]; then continue; fi
+
+IFS=' ' read -a dArray <<< `echo $details | awk ' { gsub(/[@:]/, " ", $0); print $0 } ' `
+ip=${dArray[0]}
+password=$2
+
+r=$(
+expect << EndExpect
+   set timeout -1
+   spawn ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$ip
+   match_max 100000
+   expect -exact "password: "
+   send -- "$password\r"
+   expect -exact "# "
+   send -- "ifconfig eth0\r"
+   expect -exact "# "
+   send -- "exit\r"
+   expect eof
+EndExpect
+)
+
+echo "$ip `echo "$r" | awk ' /HWaddr/ { print $5 } '`"
+
+   if [ $? != 0 ]; then
+      echo "Failure"
+      break
+   fi
+done < $1
+IFS="\n"

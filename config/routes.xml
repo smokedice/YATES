@@ -1,0 +1,223 @@
+<routes xmlns="routes"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="routes validation/routes.xsd">
+ <!-- Humax TAS Test Boxes -->
+ <route name="test01" enabled="true">
+    <!-- 192.168.16.145 -->
+    <macAddr>dcd3211c9fdf</macAddr> 
+ </route>
+ <route name="test02" enabled="true">
+    <!-- 192.168.19.119 -->
+    <macAddr>0003784b7ab6</macAddr>
+ </route>
+ <route name="test03" enabled="true">
+    <!-- 192.168.19.63 -->
+    <macAddr>0003784b7aa4</macAddr>
+ </route>
+ <route name="test04" enabled="true">
+    <!-- 192.168.16.170 -->
+    <macAddr>dcd3211c9f08</macAddr>
+ </route>
+
+ <!-- Humax Soak Boxes -->
+ <route name="soak01" enabled="false">
+    <!-- 192.168.18.180 -->
+    <macAddr>dcd3211c9f9b</macAddr>
+ </route>
+ <route name="soak02" enabled="false">
+    <!-- 192.168.19.140 -->
+    <macAddr>0003784b7a52</macAddr>
+ </route>
+ <route name="soak03" enabled="false">
+    <!-- 192.168.18.176 -->
+    <macAddr>dcd3211c9f51</macAddr>
+ </route>
+ <route name="soak04" enabled="false">
+    <!-- 192.168.18.176 -->
+    <macAddr>dcd3211c9f05</macAddr>
+ </route>
+ <route name="soak05" enabled="false">
+    <!-- 192.168.18.181 -->
+    <macAddr>dcd3211c9f75</macAddr>
+ </route>
+ <route name="soak06" enabled="false">
+    <!-- 192.168.19.142 -->
+    <macAddr>0003784b7a95</macAddr>
+ </route>
+ <route name="soak07" enabled="false">
+    <!-- 192.168.19.153 -->
+    <macAddr>0003784b7a35</macAddr>
+ </route>
+ <route name="soak08" enabled="false">
+    <!-- 192.168.19.111 -->
+    <macAddr>0003784b7a29</macAddr>
+ </route>
+ <route name="soak09" enabled="false">
+    <!-- 192.168.19.226 -->
+    <macAddr>0003784b7ab3</macAddr>
+ </route>
+ <route name="soak10" enabled="false">
+    <!-- 192.168.16.133 -->
+    <macAddr>dcd3211c9f71</macAddr>
+ </route>
+
+ <!-- Humax Conformance Boxes -->
+ <route name="hconf01" enabled="false">
+    <!-- 192.168.16.171 -->
+    <macAddr>dcd3211c9f0a</macAddr>
+ </route>
+ <route name="hconf02" enabled="false">
+    <!-- 192.168.16.141 -->
+    <macAddr>dcd3211c9fbd</macAddr>
+ </route>
+ <route name="hconf03" enabled="false">
+    <!-- 192.168.19.105 -->
+    <macAddr>0003784b7ad3</macAddr>
+ </route>
+ <route name="hconf04" enabled="false">
+    <!-- 192.168.19.110 -->
+    <macAddr>0003784b7a76</macAddr>
+ </route>
+ <route name="hconf05" enabled="false">
+    <!-- 192.168.19.178 -->
+    <macAddr>0003784b7a24</macAddr>
+ </route>
+ <route name="hconf06" enabled="false">
+    <!-- 192.168.16.38 -->
+    <macAddr>0003784b7a81</macAddr>
+ </route>
+ <route name="hconf07" enabled="false">
+    <!-- 192.168.19.108 -->
+    <macAddr>0003784b7acd</macAddr>
+ </route>
+ <route name="hconf08" enabled="false">
+    <!-- 192.168.19.109 -->
+    <macAddr>0003784b7aca</macAddr>
+ </route>
+ <route name="hconf09" enabled="false">
+    <!-- 192.168.19.161 -->
+    <macAddr>0003784b7a48</macAddr>
+ </route>
+ <route name="hconf10" enabled="false">
+    <!-- 192.168.19.147 -->
+    <macAddr>0003784b7a26</macAddr>
+ </route>
+
+ <!-- Huawei Conformance Boxes -->
+ <route name="uconf01" enabled="false">
+    <!-- 192.168.18.128 -->
+    <macAddr>10c61fe95463</macAddr>
+ </route>
+ <route name="uconf02" enabled="false">
+    <!-- 192.168.16.92 -->
+    <macAddr>10c61fe95469</macAddr>
+ </route>
+ <route name="uconf03" enabled="false">
+    <!-- 192.168.18.96 -->
+    <macAddr>10c61fe9546d</macAddr>
+ </route>
+ <route name="uconf04" enabled="false">
+    <!-- 192.168.18.95 -->
+    <macAddr>10c61fe9546b</macAddr>
+ </route>
+ <route name="uconf05" enabled="false">
+    <!-- 192.168.18.94 -->
+    <macAddr>10c61fe9546c</macAddr>
+ </route>
+ <route name="uconf06" enabled="false">
+    <!-- 192.168.18.93 -->
+    <macAddr>10c61fe95493</macAddr>
+ </route>
+ <route name="uconf07" enabled="false">
+    <!-- 192.168.18.92 -->
+    <macAddr>10c61fe9548b</macAddr>
+ </route>
+ <route name="uconf08" enabled="false">
+    <!-- 192.168.18.91 -->
+    <macAddr>10c61fe9548c</macAddr>
+ </route>
+ <route name="uconf09" enabled="false">
+    <!-- 192.168.18.90 -->
+    <macAddr>10c61fe9548f</macAddr>
+ </route>
+ <route name="uconf10" enabled="false">
+    <!-- 192.168.18.89 -->
+    <macAddr>10c61fe95490</macAddr>
+ </route>
+
+ <!-- Mark Skinner -->
+ <route name="dev01" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3216519b8</macAddr>
+ </route>
+ <route name="dev02" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9fcf</macAddr>
+ </route>
+
+ <!-- Alberto Aguilera -->
+ <route name="dev03" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd321a52e5e</macAddr>
+ </route>
+
+ <!-- Manimegalai J -->
+ <route name="dev04" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>0003784b7a85</macAddr>
+ </route>
+ <route name="dev05" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9fa7</macAddr>
+ </route>
+
+ <!-- Francis Horsman -->
+ <route name="dev06" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9fac</macAddr>
+ </route>
+
+ <!-- Jehad Al-Ansari -->
+ <route name="dev07" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9fbc</macAddr>
+ </route>
+ <route name="dev08" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>000378651b01</macAddr>
+ </route>
+
+ <!-- Antonio Lunghi -->
+ <route name="dev09" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>0003784b7a49</macAddr>
+ </route>
+
+ <!-- Vikram Tegginamath -->
+ <route name="dev10" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9f40</macAddr>
+ </route>
+
+ <!-- Adam Hills -->
+ <route name="dev11" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9fa9</macAddr>
+ </route>
+
+ <!-- Ashutosh Joglekar -->
+ <route name="dev12" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3211c9faa</macAddr>
+ </route>
+
+ <!-- Aswin Velusamy -->
+ <route name="dev13" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>00037b4b7aa6</macAddr>
+ </route>
+ <route name="dev14" enabled="false">
+    <!-- 192.168. -->
+    <macAddr>dcd3217a327b</macAddr>
+ </route>
+</routes>

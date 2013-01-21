@@ -1,0 +1,397 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+        </style>
+    </head>
+    <body>
+        <h1>Yet Another Test Execution System</h1>
+        <h2>Authors</h2>
+        <p>
+            Mark Wallsgrove (mark.wallsgrove@gmail.com)<br/>
+            Vladimirs Ambrosovs (rodriguez.twister@gmail.com)
+        </p>
+
+        <h2>Content</h2>
+        <ul>
+            <li><a href="#Description">Description</a></li>
+            <li><a href="#Dependencies">Dependencies</a></li>
+            <li><a href="#Requirements">Requirements</a></li>
+            <li><a href="#Configuration">Configuration</a></li>
+            <li><a href="#Commandline">Command line</a></li>
+            <li><a href="#Slave">Slave</a></li>
+            <li><a href="#Results">Results</a></li>
+            <li><a href="#Architecture">Architecture</a></li>
+            <li><a href="#ToDo">To-do</a></li>
+            <li><a href="#Limitations">Limitations</a></li>
+        </ul>
+
+        <a id="Description"></a><h3>Description</h3>        
+        <p>
+            YATES (Yet Another Test Execution System) has been designed to execute tests against
+            remote peers using well established, readily available technologies. The slave uses the 
+            lightest technologies to avoid interference while testing, while the master is capable of
+            handling many remote connections to speed up distribution.
+        </p>
+        <p>
+            Currently YATES only supports the Linux operating system and has only been tested on
+            Ubuntu 12.04.
+        </p>
+
+        <a id="Dependencies"></a><h3>Dependencies</h3>
+        <ul>
+            <li><a href="http://www.python.org/">Python</a> v2.7</li>
+            <li><a href="http://www.familieleuthe.de/DownloadGenXmlIf.html">Genxmlif</a> v0.9</li>
+            <li><a href="http://jsonpickle.github.com/">JsonPickle</a> v0.4.1</li>
+            <li><a href="http://wwwsearch.sourceforge.net/mechanize">Mechanize</a> v0.2.5</li>
+            <li><a href="http://www.leuthe-net.de/MiniXsv.html">Minixsv</a> v0.9.0</li>
+            <li><a href="https://nose.readthedocs.org/en/latest">Nose</a> v1.0</li>
+            <li><a href="https://github.com/coleifer/peewee">PeeWee</a> v0.9.6</li>
+            <li><a href="http://pyasn1.sourceforge.net/">Pyans1</a> v1.0</li>
+            <li><a href="https://twistedmatrix.com/trac/">Twisted</a> v12.0</li>
+            <li><a href="http://pypi.python.org/pypi/zope.interface/4.0.3">Zope</a></li>
+        </ul>
+
+        
+        <a id="Requirements"></a><h3>Requirements</h3>
+        <p>
+            <b>UDP</b> The YATES client discovers the slaves by listening to a UDP broadcast that is periodically
+            announced on group 224.6.6.6, port 8005. It is recommended to avoid complication
+            that the YATES clients and slaves are networked on the same network switch or router
+            if possible. If the clients and slaves are situated on different networks, it might occur
+            that the routers and/or switches will need configuring to allow the UDP broadcast packets.
+        </p>
+        <p>
+            <b>SSH</b> <a href="https://en.wikipedia.org/wiki/Secure_Shell">Secure Shell</a> is used to
+            communicate with the peers for executing bash scripts and rebooting. A limited user should
+            be created for YATES which includes the privilege to reboot the machine (if reboot is required).
+        </p>
+        <p>
+            <b>Startup</b> When a peer reboots it should start a web server and the provided UDP client.
+            The YATES user requires read and write permissions to the directory where the web server is
+            configured to serve from. Read the <a href="#Slave">slave</a> section for details.
+        </p>
+
+
+        <a id="Configuration"></a><h3>Configuration</h3>
+        <p>
+            <b>YATES</b> The configuration files for the YATES client are formatted in 
+            <a href="https://en.wikipedia.org/wiki/XML">XML</a> and validated using
+            <a href="https://en.wikipedia.org/wiki/XML_Schema_(W3C)">XSD</a>.
+            The top level structure holds the XML files and the paired XSD validation file exists
+            in a folder named "validation". The files are named in pairs, so that a XML and XSD file
+            exists within the root and validation folder with the same name (but not file extension).
+        </p>
+
+        <p>
+            <b>Peer</b> The peer includes a very simplistic configuration file that is located within
+            the directory where the web server serving from. The name of the file is "config" and for
+            good practice the YATES user should have read privileges. The format is extremely simple,
+            anything before the first equals character is the key, anything after is the value.
+        </p>
+        <p class="code">
+            user=root<br/>
+            password=root<br/>
+            tmpdir=/usr/share/YATES<br/>
+            envserver=<br/>
+            envserverport=<br/>
+            rebootcmd=reboot<br/>
+        </p>
+        <p>
+            All of the configured attributes above are required, but the envserver and envserverport
+            values can be left blank. The "tmpdir" attribute is required to be configured to the 
+            same location where the web server is serving from. The rebootcmd is required to exit
+            with a exit status of zero, else the error will be propagated.
+        </p>
+        <p>
+            If a exit code not equal to zero is required to reboot the machine, the command 
+            <a href="http://linux.about.com/library/cmd/blcmdl1_trap.htm">trap</a> can be 
+            used to exit gracefully.
+        </p>
+        <p class="code">
+            rebootcmd=trap '(sleep 3 && reboot -f) &' 0
+        </p>
+
+        <a id="Commandline"></a><h3>Command Line</h3>
+        <p>
+            The command line version of YATES provides normal execution as expected, and also a monitor
+            mode. The monitoring mode displays peer details that are available on the local network.
+        </p>
+        <p>
+            <b>Configuration</b> Each property within the YATES configuration XML files can be overridden using command line
+            arguments. All of the customizable configuration attributes that can be altered can be seen
+            by typing "--help" on the command line. Below is a example of overriding the "rebootNewBoxes" property:
+        </p>
+        <p class="code">python TAS.py execution.rebootNewBoxes true</p>
+
+        <a id="Slave"></a><h3>Slave</h3>
+        <p>The slave consists of a web server and UDP client.</p>
+        <p>
+            <b>Discovery</b> The UDP client is used to broadcast itself across the network to alert the YATES clients.
+            The UDP broadcast is made up of two pieces of information. The packet is formatted with
+            the slave's MAC address, literal colon, and a random hex value.
+        </p>
+        <p>
+            The random hex value is created using <a href="http://linux.die.net/man/4/urandom">urandom</a>
+            and encoded into hex. The purpose is to provide a heartbeat and unique value for each reboot/crash.
+        </p>
+        <p class="code">8c89a55570fb:0e97befef491d762751d</p>
+
+        <p>
+            <b>Web Server</b> The web server is used to transfer log files once a test has been completed. Files that need to
+            be synced to the slave are done so by opening a SSH session to the slave and using the wget command to
+            backwards retrieve the file from the YATES client.
+        </p>
+
+        <p>
+            To provide a web server and UDP client the following bash can be used. The directory where the
+            following command is executed from will be served by the web server.
+        </p>
+        <p class="code">python -m SimpleHTTPServer 5005 &</p>
+
+        <p><b>UDP Client</b> The code below provides the UDP client that broadcasts it's presence to advertise the service.</p>
+        <p class="code">
+            python -c "<br/>
+            import socket, time, uuid, os<br/>
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)<br/>
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)<br/>
+            msg = '%s:%s' %(hex(uuid.getnode())[2:-1].zfill(12), str(os.urandom(10)).encode('hex'))<br/>
+            while time.sleep(2) == None: sock.sendto(msg, ('224.6.6.6', 8005)) " &
+        </p>
+
+        <p>
+            <b>Files</b> Within the directory where the web server serves from there will be files and folders created
+            depending on what stage the slave is on.
+        </p>
+        <ul>
+            <li>config - Peer configuration file</li>
+            <li>locked - Peer is in use, IP address of the YATES client is within the file</li>
+            <li>unlock - Once the peer is rebooted both locked and unlock should be deleted</li>
+            <li>logs - Folder that includes all logs that are harvested per test</li>
+            <li>tests - Tests to be executed</li>
+            <li>scripts.*.tar.gz - Archived tests and scripts</li>
+            <li>* - General scripts for executing tests</li>
+        </ul>
+
+        <p>
+            If the "unlock" file exists when the peer boots up that is  within the web server directory,
+            both "unlock" and "locked" files should be deleted.
+        </p>
+        <p class="code">
+            if [ -f unlock ]; then
+                rm -rf locked unlock
+            fi
+        </p>
+
+        <a id="Results"></a><h3>Results</h3>
+        <p>
+            Depending on the result worker configuration file there can be a set of files produced by
+            a test execution:
+        </p>
+        <ul>
+            <li>log.txt - Human readable log file</li>
+            <li>result.sqlite3 - Database with result details</li>
+            <li>results.csv - <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> result file</li>
+            <li>inputs - Folder that includes all tests</li>
+            <li>logs - Folder that includes all log files produced by the tests</li>
+            <li>resultsPackage.tar.gz - All files and folders listed above compressed</li>
+        </ul>
+
+        <p>The structure of the tree within the logs folder is as follows:</p>
+        <p class="code">
+            logs<br />
+            __|-- test folder<br />
+            __|__|-- test file name folder<br />
+            __|__|__|-- test class + test method name folder<br />
+            __|__|__|__|-- unique test execution ID folder<br />
+            __|__|__|__|__|-- log files
+        </p>
+
+        <p>
+            <b>Database</b> The SQLite database includes all the information generated by executing a test session. The database file has
+            the following structure:
+        </p>
+        <embed src="ResultDatabase.svg" type="image/svg+xml" />
+
+        <ul>
+            <li><b>testresults</b> - Details all attributes relating to a test execution</li>
+            <ul>
+                <li>testDetailsRef - Reference to related test</li>
+                <li>invalid - If the test was invalid</li>
+                <li>executed - If the test was executed</li>
+                <li>result - Reference to the resulting test state</li>
+                <li>error - Test error message</li>
+                <li>startTime - Start of test execution</li>
+                <li>duration - Time taken in seconds</li>
+                <li>manualInspection - If the test was manually inspected</li>
+                <li>testExecutionDetailsRef - Reference to Test Execution Details</li>
+                <li>peerRef - Reference to peer that the test was executed on</li>
+                <li>iterationId - Iteration ID for test</li>
+                <li>resultId - Auto generated ID</li>
+            </ul><br/>
+
+            <li><b>testdetails</b> - Describes a test</li>
+            <ul>
+                <li>testId - Test ID</li>
+                <li>module - Test module name</li>
+                <li>testname - Test method name</li>
+                <li>invalid - Test invalid state</li>
+                <li>docstrings - Test method doc strings</li>
+                <li>id - Auto generated ID</li>
+            </ul><br/>
+
+            <li><b>teststates</b> - Result of a test execution</li>
+            <ul>
+                <li>name - Name of state</li>
+                <li>index - state index value</li>
+                <li>baseType - State base type (Failure, Pass, Error, Skip)</li>
+                <li>description - State description</li>
+                <li>id - Auto generated ID</li>
+            </ul><br/>
+
+            <li><b>peers</b> - All peers within the test session</li>
+            <ul>
+                <li>macAddress - Peer MAC address</li>
+                <li>netAddress - Peer IP address</li>
+                <li>id - Auto generated ID</li>
+            </ul><br/>
+
+            <li><b>peerstates</b> - States that a given peer went through during the session</li>
+            <ul>
+                <li>peerRef - Reference to peer</li>
+                <li>timeStamp - When the state occurred</li>
+                <li>state - State of the peer</li>
+                <li>peerStateId - Auto generated ID</li>
+            </ul><br/>
+
+            <li><b>testexecutiondetails</b> - Session details</li>
+            <ul>
+                <li>testSuiteName - </li>
+                <li>executionName - </li>
+                <li>testPackDescriptor - </li>
+                <li>shortFilterDesc - Short description of the filters used</li>
+                <li>startTime - Start time of the session</li>
+                <li>endTime - End time of the session</li>
+                <li>duration - Duration in seconds</li>
+                <li>envservExecutionModeName - </li>
+                <li>hostNetAddress - YATES client IP address</li>
+                <li>hostMacAddress - YATES client MAC address</li>
+                <li>tasVersion - YATES version ID</li>
+                <li>scmIdentifier - </li>
+                <li>executionId - Auto generated ID</li>
+            </ul>
+        </ul>
+
+        <a id="Architecture"></a><h3>Architecture</h3>
+        <p>The diagram below shows a simplistic view of the YATES's structure.</p>
+        <embed src="Master.svg" type="image/svg+xml" />
+
+        <ul>
+            <li>CMDLine - Command line functionality such as argument override and monitor mode</li>
+            <li>ExecutionOrganiser - Main program loop for checking peer states and shutting down</li>
+            <li>Test Gather Manager - Discovers tests</li>
+            <li>Test Discovery Worker - Discovers tests by reading Python files</li>
+            <li>Database Reader - Finds tests by reading a database</li>
+            <li>Peer - Description of the remote peer and it's current state (processes, state, etc)</li>
+            <li>SSH - SSH Client process used to execute bash on the remote slave</li>
+            <li>WGet - Retrieve files from the remote slave using a wget that is wrapped in a process</li>
+            <li>HTTP Server - Used to sync files from the YATES's client to the slave</li>
+            <li>UDP Server - Listens to <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a> broadcasts from the slaves </li>
+            <li>Result Worker - Starts and closes loggers</li>
+            <li>CSV Logger - Logs the results in a CSV format</li>
+            <li>SQL Logger - Logs the results and peer states in a SQLite database</li>
+            <li>Log File Logger - Create a human readable file that includes peer states and test results</li>
+        </ul>
+
+        <p>
+            <b>Design</b> YATES's design philosophy is to iterate many times and execute long running jobs
+            as a (sub)process. An example of this would be to execute a test on a remote host using
+            a SSH session.
+        </p>
+
+        <embed src="MasterLoop.svg" type="image/svg+xml" />
+        <p>
+            The image above shows how YATES gathers the tests, creates the web server, creates the UDP server, etc
+            in the init process. After the init stage has completed YATES iterates around a loop of checking the
+            peer heartbeats and allowing the peers to progress through their states until completion.
+        </p>
+
+        <p>The next diagram shows all the stages that the peer goes through to complete a iteration.</p>
+        <embed src="PeerStates.svg" type="image/svg+xml" />
+
+        <ul>
+            <li>Retrieve Config - Wget the config file from the remote slave</li>
+            <li>Process Config - Convert the file into key/value pairs</li>
+            <li>Lock Box - Lock the box for exclusion use</li>
+            <li>Init Reboot - Reboot the box if this is the first iteration (based on configuration)</li>
+            <li>Sync Code - Sync the test code to the remote peer using SSH and reverse wget</li>
+            <li>Execute Test - Execute a test on the remote slave using SSH</li>
+            <li>Archive Logs - SSH into the box and archive the logs for easy transport</li>
+            <li>Sync Logs - Sync the logs to the YATES client using a wget</li>
+            <li>Define Results - Define a result from the XUnit XML and logs</li>
+            <li>Report Results - Report the result to the result worker loggers</li>
+            <li>Grace Period - Sleep for a given time if required (based on test reactions)</li>
+            <li>Post Reboot - Reboot the box after testing (based on configuration)</li>
+        </ul>
+
+        <p>
+            <b>Locking</b> A box can be used by any YATES client due to the fact that each box broadcasts it's services across
+            the network. This means that a locking mechanism needs to be in place to make sure the box is used
+            exclusively.
+        </p>
+        <embed src="PeerLocking.svg" type="image/svg+xml" />
+        <p>
+            Once a SSH connection has been established the existence of a lock file named "locked" is checked.
+            The property "tmpdir" from the slave configuration file is used to store the file. If the file does
+            not exist it is created with the contents of the YATES's IP address.
+        </p>
+
+        <p>
+            The two second delay is to remove the risk of a race condition between multiple YATES clients.
+            If the original content is found to be in the locked file, the box is exclusively locked and
+            ready for use.
+        </p>
+
+        <p>
+            <b>Heart Beats</b> The UDP broadcasts also act as a heartbeat so that YATES knows if a slave has crashed
+            or randomly rebooted. The random hex value within the UDP packet provides a unique session ID for each
+            boot. The hearts are not checking while in a stage less than Sync Code. Until the box has been locked
+            the heart beats cannot be expected to be reliable as other clients might be rebooting the slave.
+        </p>
+
+        <a id="ToDo"></a><h3>To-do</h3>
+        <ul>
+            <li>Review this document</li>
+            <li>GUI</li>
+            <li>Deb packaging</li>
+            <li>Test on other Linux distributions</li>
+            <li>Remove Linux requirements to create a cross platform YATES client</li>
+            <li>Pipe logs into log file</li>
+            <li>Reactions</li>
+        </ul>
+        
+        <a id="Limitations"></a><h3>Limitations</h3>
+        <ul>
+            <li>Use of Linux commands - Bash scripts, wget, awk, netstat, etc</li>
+            <li>Use of Linux file locations - /dev/null etc</li>
+        </ul>
+    </body>
+</html>

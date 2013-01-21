@@ -1,0 +1,40 @@
+Index: twisted/python/dist.py
+===================================================================
+--- twisted/python/dist.py	(revision 31665)
++++ twisted/python/dist.py	(working copy)
+@@ -10,7 +10,7 @@
+ from distutils.command import build_scripts, install_data, build_ext, build_py
+ from distutils.errors import CompileError
+ from distutils import core
+-from distutils.core import Extension
++from distutils.core import Extension, Distribution
+ 
+ twisted_subprojects = ["conch", "lore", "mail", "names",
+                        "news", "pair", "runner", "web",
+@@ -253,6 +253,12 @@
+ 
+ ## Helpers and distutil tweaks
+ 
++# Global --no-speedups option to install Twisted without extensions - #3586
++
++Distribution.global_options.append(('no-speedups', None, 'skip C extensions'))
++Distribution.no_speedups = 0
++
++
+ class build_py_twisted(build_py.build_py):
+     """
+     Changes behavior in Python 2.2 to support simultaneous specification of
+@@ -301,6 +307,13 @@
+     Allow subclasses to easily detect and customize Extensions to
+     build at install-time.
+     """
++    def finalize_options(self):
++        """
++        Clean extension list if global --no-speedups option is set.
++        """
++        build_ext.build_ext.finalize_options(self)
++        if self.distribution.no_speedups:
++            self.extensions = []
+ 
+     def prepare_extensions(self):
+         """

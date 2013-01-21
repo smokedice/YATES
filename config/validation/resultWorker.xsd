@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="resultWorker" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="resultWorker">
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:element name="resultWorker">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:output"/>
+        <xs:element ref="ns1:customLogFilters"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:sqlLite"/>
+        <xs:element ref="ns1:logFile"/>
+        <xs:element ref="ns1:csvFile"/>
+        <xs:element ref="ns1:fileSystem"/>
+        <xs:element ref="ns1:trmsLoggers"/>
+      </xs:sequence>
+      <xs:attribute name="location" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileSystem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:clear"/>
+        <xs:element ref="ns1:archive"/>
+      </xs:sequence>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filename" type="xs:NCName"/>
+  <xs:element name="sqlLite">
+    <xs:complexType>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+      <xs:attribute name="clear" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logFile">
+    <xs:complexType>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+      <xs:attribute name="clear" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="csvFile">
+    <xs:complexType>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+      <xs:attribute name="clear" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="trmsLoggers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="ns1:trms"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="trms">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:url"/>
+        <xs:element type="xs:string" name="username" />
+        <xs:element type="xs:string" name="password" />
+      </xs:sequence>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="url" type="xs:anyURI"/>
+  <xs:element name="location">
+    <xs:simpleType>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+)$"></xs:pattern>
+        </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="clear" type="xs:boolean"/>
+  <xs:element name="archive">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name">
+          <xs:simpleType>
+              <xs:restriction base="xs:string">
+                  <xs:pattern value="[a-zA-Z0-9_\.]+" />
+              </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="format">
+          <xs:simpleType>
+              <xs:restriction base="xs:string">
+                  <xs:enumeration value="zip" />
+                  <xs:enumeration value="tar" />
+                  <xs:enumeration value="tar.gz" />
+                  <xs:enumeration value="tgz" />
+              </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element ref="ns1:location" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="customLogFilters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ns1:customLogFilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="customLogFilter" type="xs:string"/>
+</xs:schema>

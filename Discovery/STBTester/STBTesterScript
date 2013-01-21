@@ -1,0 +1,211 @@
+#!/bin/bash -x
+IFS=$'\n'
+workspace=`pwd`
+echo "Workspace: $workspace"
+
+testName="$2"
+testLocation="$workspace/STBTesterTests/$2"
+testFile="$testLocation/test.py"
+echo "Test Name: $testName"
+echo "Test Location: $testLocation"
+echo "Attempting to execute $testFile" 
+
+if [ ! -f $testFile ]; then
+    echo "Invalid test script"
+    exit 1
+fi
+
+mkdir logs
+executionAttr=$1
+dbusLog=$workspace/logs/dbus.txt
+stdoutLog=$workspace/logs/stdout.txt
+stderrLog=$workspace/logs/stderr.txt
+xunitLog=$workspace/logs/xunit.xml
+serialLog=$workspace/logs/serial.txt
+export PYTHONPATH="$workspace/STBTesterTests/library"
+
+vars=`python -c "f = open('config','r'); lines = f.readlines(); f.close();
+print '\n'.join([ 'export \"%s\"=\"%s\"' %(k,v) for k,v in [ y.strip().split('=', 1) for y in lines ]])"`
+eval $vars
+
+run() {
+    local error=0
+    echo "<?xml version='1.0' encoding='UTF-8'?>"
+
+    msg=`runtest "$testName"`
+    rst=$?
+
+    errors="0"
+    failures="0"
+    if [[ $rst == 1 ]]; then  errors="1"; fi
+    if [[ $rst == 2 ]]; then failures="1"; fi
+    
+    echo "<testsuite name='${testName}_module' tests='1' errors='$errors' failures='$failures' skip='0'>"
+    echo $msg
+    echo "</testsuite>"
+}
+
+runtest() {
+    local t="$1"
+    dbuspidfile=""
+    trap "cleanup" RETURN
+
+    if [[ -n ${DBUS_MONITOR_HOST:-} ]]; then
+        dbuspidfile=`mktemp`
+
+        # TODO: might be wrong
+        #echo " ( dbus-monitor --address tcp:host=$DBUS_MONITOR_HOST,port=1337  2>>'$dbuserr' & echo $! >$dbuspidfile ) | ts '[%d/%b/%Y %H:%M:%S %z] dbus-monitor: ' >'$dbusLog' & "
+        ( dbus-monitor --address tcp:host=$DBUS_MONITOR_HOST,port=1337 \
+               2>>"$dbuserr" & echo $! >$dbuspidfile ) |
+          ts '[%d/%b/%Y %H:%M:%S %z] dbus-monitor: ' >"$dbusLog" &
+    fi
+
+    cd logs
+    local ret
+    local error=0
+    local failure=
+    local start=$(date +%s)
+
+    local rawout="/tmp/fifo-out-$$"
+    local rawerr="/tmp/fifo-err-$$"
+    mkfifo "$rawout"
+    mkfifo "$rawerr"
+
+    local PVR_filesink='! tee name=d d. ! queue ! filesink location=video.mpeg d. !'
+    local BM_filesink='! tee name=d d. ! ffmpegcolorspace ! queue ! ffenc_mpeg4 ! mpegtsmux ! filesink location=video.mpeg d.'
+
+    if ! echo $STBT_SOURCE_PIPELINE | grep -q 'filesink'; then
+        STBT_SAVE_VIDEO=${STBT_SAVE_VIDEO:-}
+        if [[ "${STBT_SAVE_VIDEO,,}" =~ yes|true|1 ]]; then
+            ( echo $STBT_SOURCE_PIPELINE | grep -q 'v4l2src' ) && \
+                STBT_SOURCE_PIPELINE=$(echo $STBT_SOURCE_PIPELINE | sed "s/!/$PVR_filesink/")
+            ( echo $STBT_SOURCE_PIPELINE | grep -q 'decklinksrc' ) && \
+                STBT_SOURCE_PIPELINE="$STBT_SOURCE_PIPELINE $BM_filesink"
+        fi
+    fi
+
+    DISPLAY=:0.0 stbt run --source-pipeline="$STBT_SOURCE_PIPELINE" --sink-pipeline="$STBT_SINK_PIPELINE" --control="$STBT_CONTROL" -v "$testLocation/test.py" >"$stdoutLog" 2>"$stderrLog" &    
+    stbtpid=$!
+    wait $stbtpid
+    ret=$?
+
+    [[ $ret -ne 0 ]] && tail "$stderrLog" | grep -Eq '(Too many underruns.|stbt.UITestError)' && {
+        error=1
+        powercycle | ts '[%d/%b/%Y %H:%M:%S %z] jenkins-stbt-run: ' >>"$stdoutLog"
+    }
+
+    local end=$(date +%s)
+    if [ $ret -eq 0 ]; then
+        printf "OK\n" >&2
+        rm -f video.mpeg
+        rm -f video.mp4
+    else
+        printf "FAIL\n" >&2
+        failure="<failure />"
+
+        if [[ -n ${DBUS_MONITOR_HOST:-} ]]; then
+            ftp "$DBUS_MONITOR_HOST" 2>&1 >/dev/null <<-EOF
+		root
+		cd /opt/zinc/var/applications/data/air/mainui/stagecraft-data/
+		get core
+		delete core
+		EOF
+            [[ -f core ]] && tar -czf $workspace/logs/core.tar.gz core && rm core
+        fi 
+    fi
+
+    cat <<-EOF
+	  <testcase name='$t' time='$((end - start))'>
+	    $failure
+	  </testcase>
+	EOF
+    sleep 2
+
+    [[ $error != 0 ]] && return 1
+    [[ $ret != 0 ]] && return 2
+    return 0
+}
+
+cleanup() {
+    dbuspid=""
+    [[ -z $dbuspidfile ]] || read dbuspid <$dbuspidfile
+    [[ -z "$dbuspid" ]] || kill $dbuspid >/dev/null 2>&1
+}
+
+powercycle() {
+    echo "Supposed capture device lock-up or STB freeze" >&2
+    [[ -n ${STBT_PVR_POWER_OUTLET:-} ]] || {
+        echo WARNING: Programmable power socket is not in use. \
+            Manual reset may be needed.
+        return
+    }
+    local cli_err=$?
+    local coolingtime=10
+    detectlockup && coolingtime=300
+    turnpower off
+    sleep $coolingtime
+    turnpower on
+    bootstb
+    echo PVR and STB have been power-cycled
+}
+
+turnpower() {
+    local state=$1
+    # <outlet address>=<PDU IP address>:<outlet ID>
+    # TODO: where should this be?
+    "$WORKSPACE/uitests/tools/power.sh" \
+        $(echo $STBT_PVR_POWER_OUTLET | sed -r 's|:.+||') \
+        $state $(echo $STBT_PVR_POWER_OUTLET | sed -r 's|.+:||') >&2
+}
+
+detectlockup() {
+    echo $STBT_SOURCE_PIPELINE | grep -q 'v4l2src' && {
+        v4l2-ctl -d $(echo $STBT_SOURCE_PIPELINE |
+            perl -ne 'print $1 if /device=(\S+)/') -V &>/dev/null || return 0
+    }
+    return 1
+}
+
+bootstb() {
+    if echo $STBT_CONTROL | grep -q 'lirc:'; then
+        sleep 6
+        irsend -d $(lirc_socket) SEND_ONCE $(lirc_remote) POWER
+        sleep 120
+    elif echo $STBT_CONTROL | grep -q 'vr:'; then
+        sleep 75
+        while ! ping -c 1 $(vr_host) &>/dev/null; do
+            sleep 5
+        done
+        sleep 15
+        echo -e "D\tPOWER\n\0U\tPOWER\n\0" | nc $(vr_host) $(vr_port)
+        sleep 15
+    fi
+}
+
+lirc_socket() {
+    echo $STBT_CONTROL |
+        perl -ne 'if (/:(.+):/) { print $1; } else { print "/var/run/lirc/lircd"; }'
+}
+lirc_remote() {
+    echo $STBT_CONTROL | perl -ne 'print $1 if /:([^:]+)$/'
+}
+vr_host() {
+    echo $STBT_CONTROL |
+        perl -ne 'if (/:(.+):/) { print $1; } elsif (/:(.+)/) { print $1; }'
+}
+vr_port() {
+    echo $STBT_CONTROL |
+        perl -ne 'if (/:.+:(.+)/) { print $1; } else { print "2033"; }'
+}
+
+testsuites() {
+    # a/b/c/test.py => a/b
+    for t in $(testscripts); do dirname $(dirname $t); done | sort | uniq
+}
+testcases() {
+    # a/b/c/test.py => c
+    local suite=$1
+    for t in $(testscripts | grep $suite); do basename $(dirname $t); done
+}
+
+run > "$workspace/logs/xunit.xml"

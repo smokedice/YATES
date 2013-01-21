@@ -1,0 +1,42 @@
+#!/bin/bash -x
+workspace=`pwd`
+
+for config in /etc/profile ~/.profile; do
+    if [ -f $config ]; then
+        cd / # Humax bug
+        source $config
+        cd $workspace
+    fi
+done
+
+mkdir logs
+executionAttr=$1
+dbusLog=$workspace/logs/dbus.txt
+stdoutLog=$workspace/logs/stdout.txt
+stderrLog=$workspace/logs/stderr.txt
+xunitLog=$workspace/logs/xunit.xml
+
+vars=`python -c "f = open('config','r'); lines = f.readlines(); f.close();
+print '\n'.join([ 'export \"%s\"=\"%s\"' %(k,v) for k,v in [ y.strip().lower().split('=') for y in lines ]])"`
+eval $vars
+
+cd PythonNoseTests
+export PYTHONPATH="$PYTHONPATH:`pwd`"
+dbus-monitor eavesdrop=true $dbusExtraAttr >$dbusLog 2>&1 &
+dbusMonitorPID=$!
+sleep 1
+
+# Run DBUS without eavesdrop
+if [ `ps aux | awk ' { print $2 } ' | grep -c $dbusMonitorPID` -eq 0 ]; then
+    dbus-monitor >$dbusLog 2>&1 &
+fi
+
+nosetests -sv --nocapture --with-xunit --xunit-file=$xunitLog $executionAttr >$stdoutLog 2>$stderrLog
+
+# Copy custom logs
+if [[ `ls | grep -c "*.log"` > 0 ]]; then
+    cp -rf *.log $workspace/logs 
+fi
+
+# Fix for NetworkManager race condition
+killall dbus-monitor

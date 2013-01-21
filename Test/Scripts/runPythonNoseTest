@@ -1,0 +1,44 @@
+#!/bin/bash -x
+workspace=`pwd`
+
+cd / # Humax bug
+source ~/.profile
+cd $workspace
+
+#export PATH="$PATH:/opt/zinc/oss/bin"
+mkdir logs
+
+executionAttr=$1
+dbusLog=$workspace/logs/dbus.txt
+stdoutLog=$workspace/logs/stdout.txt
+stderrLog=$workspace/logs/stderr.txt
+xunitLog=$workspace/logs/xunit.xml
+appVersion=`appversion | awk ' /version/ { print $2 } '`
+
+vars=`python -c "f = open('config','r'); lines = f.readlines(); f.close();
+print '\n'.join([ 'export \"%s\"=\"%s\"' %(k,v) for k,v in [ y.strip().lower().split('=') for y in lines ]])"`
+eval $vars
+echo " >>> Exports: `export`"
+echo " >>> Vars: $vars"
+
+cd PythonNoseSrc
+dbus-monitor eavesdrop=true $dbusExtraAttr >$dbusLog 2>&1 &
+dbusMonitorPID=$!
+sleep 1
+
+# Run DBUS without eavesdrop
+if [ `ps aux | awk ' { print $2 } ' | grep -c $dbusMonitorPid` -eq 0 ]; then
+    dbus-monitor >$dbusLog 2>&1 &
+fi
+
+echo "nosetests -sv --nocapture --with-xunit --xunit-file=$xunitLog $executionAttr >$stdoutLog 2>$stderrLog" >> /mnt/hd1/testLog
+echo "cwd: `pwd`\n" >> /mnt/hd1/testLog
+nosetests -sv --nocapture --with-xunit --xunit-file=$xunitLog $executionAttr >$stdoutLog 2>$stderrLog
+
+# Copy custom logs
+if [[ `ls | grep "*.log"` > 0 ]]; then
+    cp -rf *.log $workspace/logs 
+fi
+
+# Fix for NetworkManager race condition
+killall dbus-monitor

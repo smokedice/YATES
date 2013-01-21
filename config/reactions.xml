@@ -1,0 +1,5 @@
+<reactions
+    xmlns="reactions"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="reactions validation/reactions.xsd">
+</reactions>
