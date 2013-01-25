@@ -1,6 +1,6 @@
 from Discovery.PythonNose.PythonNoseTest import PythonNoseTest
 from Results.Model import ModelUtils
-from TestGather.DBReader.Model.Tests import Tests
+from Discovery.PythonNose.DBReader.Model.Tests import Tests
 from Utils.Configuration import ConfigurationManager
 import os
 

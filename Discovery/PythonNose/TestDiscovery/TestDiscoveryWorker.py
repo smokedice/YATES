@@ -1,19 +1,13 @@
 from Discovery.PythonNose.PythonNoseTest import PythonNoseTest
-from Test.YVDocstring import YVDocstring
-from TestGather.TestDiscovery.TestCaseParser import TestCaseParser
+from Discovery.PythonNose.TestDiscovery.docstring import process_docstr, \
+    parse_test_file, find_python_files, gather_doc_str
 from Utils.Logging import LogManager
 
-import nose, os, pickle, sys, tempfile, time
+from multiprocessing import Queue, Process
+import os, pickle, sys, tempfile, time, traceback
 from glob import glob
 
 class TestDiscoveryWorker(object):
-    '''
-    Class creates the source object using the tests discovered
-    in the filesystem using nose API. If the DiscoveryWorker
-    is disabled in the configuration, then the source with the
-    empty test list is returned
-    '''
-    NOSE_ARGS = ["", "--collect-only", "--exe", "--with-id", "--quiet"]
     CONFIG_ENABLED_TRUE = 'true'
 
     def __init__(self, config, defaultTimeout, iterations, srcLoc):
@@ -35,157 +29,84 @@ class TestDiscoveryWorker(object):
         empty list of tests is stored in the Source object
         @return: the source object with the list of tests
         '''
-        if self.enabled:
-            return self.__discoverTests()
-        return []
+        if not self.enabled:
+            return []
 
-    def __discoverTests(self):
-        '''
-        Creates the list of Test() objects, which contain the information
-        about the tests, stored at the certain path relative to root
-        @param root: the root of the testpacks
-        @param path: the path to the certain test files relative to root
-        @return: the list of test objects
-        '''
-        #TODO: convert the path to list
-        testDocs = {}
+        fullPath = os.path.join(self.testRoot, self.testPath)
+        testFiles = find_python_files(fullPath)
 
-        #Get the nosetest ID data
-        testIds = self.__collectTestInfo()
-        parser = TestCaseParser()
-
-        #Parse the ids data and generate the testDocs list
-        oldPath = os.getcwd()
-        os.chdir(self.testRoot)
-
-        try:
-            for testCaseData in testIds.values():
-                parser.parseTestCase(testCaseData, testDocs)
-            #Convert textual docs into objects, for easier access
-            testDocs = YVDocstring.convertToYVDocstring(testDocs)
-            return self.__generateTestList(testDocs)
-        finally:
-            os.chdir(oldPath)
-
-    def __collectTestInfo(self):
-        '''
-        Method collects the information about tests using
-        the nose framework. 
-        @param root: the root of the testpacks
-        @param path: the path to the certain test files relative to root
-        @return: the information about tests
-        '''
-        #    Must do this here otherwise impossible to unittest:
-        self.testRoot = os.path.realpath(self.testRoot)
-
-        oldPath = os.getcwd()
-
-        try:
-            if os.path.exists(self.testRoot):
-                os.chdir(self.testRoot)
-
-            sys.path.insert(0, self.testRoot)
-
-            args = self.NOSE_ARGS
-            #TODO: make this more safe, potentially this is still
-            #unsafe, as the function returns only the unique name
-            #file is not created
-            tmpFile = tempfile.mktemp()
-            tmpFile = tmpFile + str(time.time())
-            args.append("--id-file=%s" % tmpFile)
-
-            fullPath = os.path.join(self.testRoot, self.testPath)
-            dirContents = glob('%s/*' % fullPath) + [ fullPath ]
-
-            # TODO: not sure why we need to do this, but the soak
-            # tests do not work without it
-            # Load all surrounding modules
-            for dirContent in dirContents:
-                if not os.path.isdir(dirContent): continue
-                sys.path.insert(1, dirContent)
-                modulePath = dirContent[len(self.testRoot):]
-
-                modulePath = os.path.relpath(dirContent, self.testRoot)
-                if modulePath.startswith('/'):
-                    #    TODO: This probably isn't needed anymore:
-                    modulePath = modulePath[1:]
-
-                if len(modulePath) == 0: continue
-                pkgName = modulePath.replace('/', '.')
-
-                try:
-                    __import__(pkgName)
-                except ImportError:
-                    self.logger.warn('Failed to load the module, %s' % pkgName)
-
-            fullPath = os.path.join(self.testRoot, self.testPath)
-            nose.run(defaultTest = str(fullPath), argv = args)
-        finally:
-            os.chdir(oldPath)
-
-        testInfo = pickle.loads(file(tmpFile).read())["ids"]
-
-        if os.path.exists(tmpFile):
-            os.remove(tmpFile)
-        return testInfo
-
-    def __generateTestList(self, testDocs):
-        '''
-        Creates the list of Test() objects from dictionary of tests
-        @param testDocs: the dictionary in the format
-                         {path:{testClass.testMethod:{YVDocstring}}
-        @return: the list of Test() objects
-        '''
         tests = []
-        for tfile, tcases in testDocs.items():
-            for tcase in tcases:
-                try:
-                    test = self.__createTestCase(tcase, tfile,
-                       testDocs, self.iterations)
-                    if test: tests.append(test)
-                except Exception, e:
-                    self.logger.warn('Could not parse: %s:%s, %s' % (tfile, tcase, e))
+        queue = Queue()
+        processes, alive, left = [], 0, 1
+
+        while left > 0 or alive > 0 or not queue.empty():
+            left = len(testFiles)
+            alive = [p.is_alive() for p in processes].count(True)
+
+            if alive == 10 or left == 0:
+                while not queue.empty():
+                    tests.append(queue.get())
+                time.sleep(0.1)
+                continue
+
+            process = Process(target = self.__processTest,
+                args=(self.testRoot, testFiles.pop(), queue))
+            process.daemon = True
+            process.start()
+            processes.append(process)
+
+        queue.close()
+        import pdb; pdb.set_trace()
         return tests
 
-    def __createTestCase(self, tcase, tfile, testDocs, iterations):
-        doc = testDocs[tfile][tcase]
-        description = doc.getFieldOrDefault(YVDocstring.SUMMARY)
-        testId = doc.getFieldOrDefault(YVDocstring.TEST)
-        environment = doc.getFieldOrDefault(YVDocstring.ENVIRONMENT, '')
-        testStatus = doc.getFieldOrDefault(YVDocstring.STATUS)
-        testTimeout = doc.getFieldOrDefault(YVDocstring.TIMEOUT, self.defaultTestTimeout)
-        docstrings = doc._docStrings
-        # the path to the file is relative to the testpack
+    def __processTest(self, test_root, file_path, queue):
+        ''' Convert a given file location into test objects '''
+        os.chdir(test_root)
+        if test_root not in sys.path:
+            sys.path.insert(0, test_root)
 
-        fullPath = os.getcwd()
-        if not fullPath.endswith('/'):
-            fullPath = "%s/" % fullPath
-        testFile = tfile.replace(fullPath, '')
-        testFile = os.path.realpath(testFile)
-        testFile = testFile.replace("%s/" % os.path.realpath(self.testRoot), '')
+        test_methods = parse_test_file(test_root, file_path)
+        for cls, method in test_methods:
+            raw_doc = gather_doc_str(cls, method)
+            doc_dict = process_docstr(raw_doc)
+
+            try:
+                newTest = self.__createTestCase(
+                    cls, method, file_path, raw_doc,
+                    doc_dict, self.iterations)
+                if newTest: queue.put(newTest)
+            except:
+                self.logger.warn("Cannot create object from %s, \n%s\n%s\n\n"
+                    %(file_path, doc_dict, traceback.format_exc()))
+
+        queue.close()
+
+    def __createTestCase(self, cls, method, test_file, raw_doc, doc_dict, iterations):
+        description = doc_dict.get('summary', '')
+        testId = doc_dict.get('test', '')
+        environment = doc_dict.get('environment', '')
+        testStatus = doc_dict.get('status', '')
+        testTimeout = doc_dict.get('timeout', self.defaultTestTimeout)
 
         # Check whether the test is function, or it is within class
-        splitTcase = tcase.split('.')
+        testFile = test_file.replace('%s/' % os.getcwd(), '')
+        test_method = method.im_func.func_name if cls else method.func_name
+        test_class = cls.__name__ if cls else None
 
-        if len(splitTcase) == 2:
-            testClass = splitTcase[0]
-            testMethod = splitTcase[1]
-        else:
-            testClass = None
-            testMethod = splitTcase[0]
+        manditory_data = { 'test method' : test_method,
+            'test file' : testFile, 'test id' : testId }
+        missing_data = []
 
-        testClass = testClass if not testClass else str(testClass.decode('utf-8', errors = "ignore"))
-        testMethod = str(testMethod.decode('utf-8', errors = "ignore"))
-        testFile = str(testFile.decode('utf-8', errors = "ignore"))
-        testId = str(testId.decode('utf-8', errors = "ignore"))
-        testStatus = str(testStatus.decode('utf-8', errors = "ignore"))
-        docstrings = [ str(x.decode('utf-8', errors = "ignore")) for x in docstrings ]
+        for key in manditory_data.keys():
+            if manditory_data[key] in ['', None]:
+                missing_data.append(key)
 
-        if '' in [ testMethod, testFile, testId ]:
-            return self.logger.warn('Cannot create test for %s, %s, %s' %(tcase, tfile, self.testPath))
+        if len(missing_data) > 0:
+            return self.logger.warn('Cannot create test for %s:%s.%s as %s is missing'
+                %(testFile, test_class, test_method, ', '.join(missing_data) ))
 
         return PythonNoseTest(description, iterations, environment,
-            testClass, testMethod = testMethod, testFile = testFile,
+            test_class, testMethod = test_method, testFile = testFile,
             testId = testId, testStatus = testStatus,
-            testTimeout = testTimeout, docstrings = docstrings,
+            testTimeout = testTimeout, docstrings = raw_doc,
             srcLoc = self.srcLoc)

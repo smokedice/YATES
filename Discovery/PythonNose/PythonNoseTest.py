@@ -1,21 +1,17 @@
 from Domain.States import TestState
-
 from Utils.Envcat import envcatRequest
 from Utils import Network
 from Utils.Configuration import ConfigurationManager
 
-import os
-import sys
-import time
-import traceback
+import os, sys, time, traceback
 from multiprocessing import Queue
 from multiprocessing.queues import Empty
 
-class PythonNoseTest():
+class PythonNoseTest(object):
     __STOP_ENV_SERVER_CMD = 'play'
 
-    def __init__(self   , description = '', iterations = 0 , environment = '',
-        testClass = None, testMethod = '', testFile = ''   , testId = 0,
+    def __init__(self   , description = '' , iterations = 0  , environment = '',
+        testClass = None, testMethod = ''  , testFile = ''   , testId = 0,
         testStatus = '' , testTimeout = 500, invalid = False ,
         manualInspection = False, docstrings = [''], srcLoc = None):
 
