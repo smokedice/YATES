@@ -8,6 +8,9 @@
         <xs:element ref="ns1:customLogFilters"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Configuration for how to deliver the results</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="output">
     <xs:complexType>
@@ -20,6 +23,12 @@
       </xs:sequence>
       <xs:attribute name="location" use="required" type="xs:string"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Multiple types of output. All of the output data that is recorded can 
+            be located within folder configured within the attribute "location"
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="fileSystem">
     <xs:complexType>
@@ -29,25 +38,58 @@
       </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Log all results to the file system (includes xml result, stdout, stderr, dbus logs, etc).
+            These results are structured in the file system so that the top level folder represents the
+            test details (name, class, etc). The next level is the unique execution ID (relates to the
+            Sqlite database). The unique execution ID is to provide multiple containers for each 
+            iteration of the test. Within the execution ID folder all of logs are located.
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
-  <xs:element name="filename" type="xs:NCName"/>
+  <xs:element name="filename" type="xs:NCName">
+    <xs:annotation>
+        <xs:documentation>Name of the file to record the result within</xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="sqlLite">
     <xs:complexType>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
       <xs:attribute name="clear" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Records all the results (but no logs) within a SQLite database.
+            If clear is set to true the database will be deleted each time a
+            test execution is performed
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="logFile">
     <xs:complexType>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
       <xs:attribute name="clear" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Log all peer state transitions and a minimalistic amount of data for
+            each test result within a human readable log file. If clear is set to
+            true the log file will be cleared each time a test execution is performed
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="csvFile">
     <xs:complexType>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
       <xs:attribute name="clear" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            CSV file including all test results. If clear is set to true
+            the CSV file will be wiped each time a test execution is performed
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="trmsLoggers">
     <xs:complexType>
@@ -55,6 +97,9 @@
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="ns1:trms"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Configuration for TRMS Loggers</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="trms">
     <xs:complexType>
@@ -65,6 +110,11 @@
       </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            TRMS details for uploading results after a test execution has completed
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="url" type="xs:anyURI"/>
   <xs:element name="location">
@@ -73,6 +123,12 @@
             <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+)$"></xs:pattern>
         </xs:restriction>
     </xs:simpleType>
+    <xs:annotation>
+        <xs:documentation>
+            Location of a file on the file system.
+            Paths can be relative or static. ./file ../file /root/file
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="clear" type="xs:boolean"/>
   <xs:element name="archive">
@@ -84,6 +140,12 @@
                   <xs:pattern value="[a-zA-Z0-9_\.]+" />
               </xs:restriction>
           </xs:simpleType>
+          <xs:annotation>
+              <xs:documentation>
+                Where to archive the results so that each test 
+                execution can be saved for later use.
+              </xs:documentation>
+          </xs:annotation>
         </xs:element>
         <xs:element name="format">
           <xs:simpleType>
@@ -94,6 +156,9 @@
                   <xs:enumeration value="tgz" />
               </xs:restriction>
           </xs:simpleType>
+          <xs:annotation>
+              <xs:documentation>Type of archive to use. zip, tar, tar.gz, tgz</xs:documentation>
+          </xs:annotation>
         </xs:element>
         <xs:element ref="ns1:location" />
       </xs:sequence>
@@ -105,6 +170,11 @@
         <xs:element ref="ns1:customLogFilter" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Retrieve a file from the slave after a test execution.
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="customLogFilter" type="xs:string"/>
 </xs:schema>

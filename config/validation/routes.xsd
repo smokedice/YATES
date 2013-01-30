@@ -9,6 +9,9 @@
                     ref="routes:route" />
             </xs:sequence>
         </xs:complexType>
+        <xs:annotation>
+            <xs:documentation>All the details relating to each slave</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="route">
         <xs:complexType>
@@ -28,6 +31,9 @@
             <xs:selector xpath="host" />
             <xs:field xpath="." />
         </xs:unique>
+        <xs:annotation>
+            <xs:documentation>Details relating to a single slave</xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:element name="macAddr">
         <xs:simpleType>
@@ -36,6 +42,13 @@
                     value="[a-f0-9]+" />
             </xs:restriction>
         </xs:simpleType>
+        <xs:annotation>
+            <xs:documentation>
+                Lowercase string in hex encoding that represents
+                the slaves mac address. All colons should be removed 
+                and only a-f 0-9 characters are allowed
+            </xs:documentation>
+        </xs:annotation>
     </xs:element>
     <xs:simpleType name="nameValidation">
         <xs:restriction base="xs:string">

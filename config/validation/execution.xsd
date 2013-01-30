@@ -6,15 +6,32 @@
   <xs:element name="execution">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="exec:iterations"/>
-        <xs:element ref="exec:defaultTimeout" />
-        <xs:element ref="exec:distributionAlgorithm" />
-        <xs:element name="rebootPerTest" type="xs:boolean" />
-        <xs:element name="rebootNewBoxes" type="xs:boolean" />
-        <xs:element name="manualInspection" type="xs:boolean" />
-        <xs:element name="stopWhenAllDead" type="xs:boolean"/>
+        <xs:element ref="exec:iterations" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="exec:defaultTimeout" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="exec:distributionAlgorithm" minOccurs="1" maxOccurs="1" />
+        <xs:element name="rebootPerTest" type="xs:boolean" minOccurs="1" maxOccurs="1">
+           <xs:annotation>
+            <xs:documentation>If true, reboot the slave after each test</xs:documentation>
+           </xs:annotation>
+        </xs:element>
+        <xs:element name="rebootNewBoxes" type="xs:boolean" minOccurs="1" maxOccurs="1">
+           <xs:annotation>
+            <xs:documentation>If true, reboot the slave when first discovered</xs:documentation>
+           </xs:annotation>
+        </xs:element>
+        <xs:element name="manualInspection" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="stopWhenAllDead" type="xs:boolean" minOccurs="1" maxOccurs="1">
+           <xs:annotation>
+            <xs:documentation>If true and all slaves are dead, stop the execution</xs:documentation>
+           </xs:annotation>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+      <xs:documentation>
+        Most common set of parameters that could change between test suite executions
+      </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="iterations">
    <xs:simpleType>
@@ -23,6 +40,11 @@
      <xs:maxInclusive value="100" />
     </xs:restriction>
    </xs:simpleType>
+   <xs:annotation>
+    <xs:documentation>
+        Iterate the test suite. A value of 0 equates to unlimited iterations
+    </xs:documentation>
+   </xs:annotation>
   </xs:element>
   <xs:element name="defaultTimeout">
     <xs:simpleType >
@@ -30,6 +52,12 @@
             <xs:minInclusive value="5" />
         </xs:restriction>
     </xs:simpleType>
+    <xs:annotation>
+      <xs:documentation>
+            If a test does not detail a 'timeout' within it's docstring,
+            this value is used
+      </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="distributionAlgorithm">
     <xs:simpleType>
@@ -39,5 +67,16 @@
         <xs:enumeration value="ExecutionOnEachBoxEvenly" />
       </xs:restriction>
     </xs:simpleType>
+    <xs:annotation>
+      <xs:documentation>
+            How to distribute the tests between the slaves. This is
+            multiplied by the iterations to provide the number of 
+            results expected.
+            
+            SingleExecution: Execute each test on a single box once
+            ExecutionOnEachBox: Execute each test on each box
+            ExecutionOnEachBoxEvenly: Execute each test on each box, but attempt to run a single instance of each test at a time
+      </xs:documentation>
+    </xs:annotation>
   </xs:element>
 </xs:schema>

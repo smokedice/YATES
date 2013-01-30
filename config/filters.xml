@@ -8,6 +8,14 @@
             <value>youviewreview</value>
         </values>
     </TestFilter>
+    <TestFilter enabled="true">
+        <direction>include</direction>
+        <parameter>testId</parameter>
+        <values>
+            <value>101</value>
+            <value>102</value>
+        </values>
+    </TestFilter>
     <TestPackFilter enabled="false">
         <locations>
             <location>/home/smoky/Desktop/soak.testpack</location>

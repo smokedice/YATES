@@ -11,6 +11,9 @@
         <xs:element minOccurs="0" maxOccurs="1" ref="filters:TestPackFilter" />
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Customizable filters to provide subsets of tests</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="TestFilter">
     <xs:complexType>
@@ -28,6 +31,9 @@
       </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Filters tests by a given set of characteristics</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="PriorityFilter">
     <xs:complexType>
@@ -45,6 +51,9 @@
       </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Prioritise the tests by given parameters</xs:documentation>
+    </xs:annotation>
   </xs:element> 
   <xs:element name="TestPackFilter">
     <xs:complexType>
@@ -53,6 +62,13 @@
         </xs:sequence>
         <xs:attribute name="enabled" type="xs:boolean" />
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            Include tests where their test ID is within the test pack. The testpack
+            format is a file where each line begins with a number or a hash. After
+            a test ID and a space, anything can follow (comments).
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="parameter">
     <xs:simpleType>
@@ -65,6 +81,9 @@
         <xs:enumeration value="environment"/>
       </xs:restriction>
     </xs:simpleType>
+    <xs:annotation>
+        <xs:documentation>Which value to filter the tests by</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="values">
     <xs:complexType>
@@ -80,6 +99,9 @@
         </xs:simpleType>
       </xs:attribute>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Regular expression or literal text to match the values to</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="value">
     <xs:complexType mixed="true">
@@ -92,6 +114,9 @@
         </xs:simpleType>
       </xs:attribute>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Regular expression or literal text to match the value to</xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="locations">
     <xs:complexType>
@@ -99,5 +124,8 @@
             <xs:element name="location" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>Locations of where the testpacks exists within the filesystem</xs:documentation>
+    </xs:annotation>
   </xs:element>
 </xs:schema>

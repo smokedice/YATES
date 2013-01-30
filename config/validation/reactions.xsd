@@ -7,6 +7,11 @@
         <xs:element maxOccurs="unbounded" minOccurs="0" ref="ns1:reaction"/>
       </xs:sequence>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            How to react to a certain scenario after a testcase has been executed.
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="reaction">
     <xs:complexType>
@@ -17,8 +22,19 @@
       <xs:attribute name="content" type="xs:NCName"/>
       <xs:attribute name="related" type="xs:NCName"/>
     </xs:complexType>
+    <xs:annotation>
+        <xs:documentation>
+            What to look for and how to react to a given scenario.
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
-  <xs:element name="pattern" type="xs:NCName"/>
+  <xs:element name="pattern" type="xs:NCName">
+    <xs:annotation>
+        <xs:documentation>
+            What pattern to look for (regular expression).
+        </xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:element name="effect">
     <xs:complexType>
       <xs:sequence>
@@ -26,6 +42,11 @@
         <xs:element minOccurs="0" maxOccurs="1" ref="ns1:graceperiod"/>
       </xs:sequence>
     </xs:complexType>
+        <xs:annotation>
+            <xs:documentation>
+                What should occur to the slave after a scenario has been spotted.
+            </xs:documentation>
+        </xs:annotation>
   </xs:element>
   <xs:element name="peerstate">
     <xs:simpleType>
@@ -34,6 +55,12 @@
         <xs:enumeration value="DEAD" />
       </xs:restriction>
     </xs:simpleType>
+    <xs:annotation>
+        <xs:documentation>
+            State the slave should transition into. ACTIVE will make the slave
+            skip this iteration of tests and DEAD will remove the box from use.
+        </xs:documentation>
+    </xs:annotation>
   </xs:element>
   <xs:element name="graceperiod">
     <xs:simpleType>
@@ -42,5 +69,10 @@
         <xs:maxInclusive value="36000" />
       </xs:restriction>
     </xs:simpleType>
+        <xs:annotation>
+            <xs:documentation>
+                Amount of time to sleep before another testcase is executed
+            </xs:documentation>
+        </xs:annotation>
   </xs:element>
 </xs:schema>
