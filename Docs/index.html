@@ -20,6 +20,19 @@
             ul { padding-left: 20px; }
             h1, h2, h3 { margin-bottom: 0px; }
             embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
         </style>
     </head>
     <body>
@@ -60,16 +73,15 @@
         <ul>
             <li><a href="http://www.python.org/">Python</a> v2.7</li>
             <li><a href="http://www.familieleuthe.de/DownloadGenXmlIf.html">Genxmlif</a> v0.9</li>
-            <li><a href="http://jsonpickle.github.com/">JsonPickle</a> v0.4.1</li>
+            <!--<li><a href="http://jsonpickle.github.com/">JsonPickle</a> v0.4.1</li>-->
             <li><a href="http://wwwsearch.sourceforge.net/mechanize">Mechanize</a> v0.2.5</li>
             <li><a href="http://www.leuthe-net.de/MiniXsv.html">Minixsv</a> v0.9.0</li>
-            <li><a href="https://nose.readthedocs.org/en/latest">Nose</a> v1.0</li>
+            <li><a href="https://nose.readthedocs.org/en/latest">Nose (on the slave)</a> v1.0</li>
             <li><a href="https://github.com/coleifer/peewee">PeeWee</a> v0.9.6</li>
             <li><a href="http://pyasn1.sourceforge.net/">Pyans1</a> v1.0</li>
             <li><a href="https://twistedmatrix.com/trac/">Twisted</a> v12.0</li>
             <li><a href="http://pypi.python.org/pypi/zope.interface/4.0.3">Zope</a></li>
         </ul>
-
         
         <a id="Requirements"></a><h3>Requirements</h3>
         <p>
@@ -101,6 +113,17 @@
             exists within the root and validation folder with the same name (but not file extension).
         </p>
 
+        <p>The following links documents the configuration files.</p>
+
+        <ul>
+            <li><a href="config/discovery.xsd.html">Discovery</a></li>
+            <li><a href="config/execution.xsd.html">Execution</a></li>
+            <li><a href="config/filters.xsd.html">Filters</a></li>
+            <li><a href="config/reactions.xsd.html">Reactions</a></li>
+            <li><a href="config/resultWorker.xsd.html">Result Worker</a></li>
+            <li><a href="config/routes.xsd.html">Routes</a></li>
+        </ul>
+
         <p>
             <b>Peer</b> The peer includes a very simplistic configuration file that is located within
             the directory where the web server serving from. The name of the file is "config" and for
@@ -127,7 +150,7 @@
             used to exit gracefully.
         </p>
         <p class="code">
-            rebootcmd=trap '(sleep 3 && reboot -f) &' 0
+            rebootcmd=trap '(sleep 3 &amp;&amp; reboot -f) &amp;' 0
         </p>
 
         <a id="Commandline"></a><h3>Command Line</h3>
@@ -165,7 +188,7 @@
             To provide a web server and UDP client the following bash can be used. The directory where the
             following command is executed from will be served by the web server.
         </p>
-        <p class="code">python -m SimpleHTTPServer 5005 &</p>
+        <p class="code">python -m SimpleHTTPServer 5005 &amp;</p>
 
         <p><b>UDP Client</b> The code below provides the UDP client that broadcasts it's presence to advertise the service.</p>
         <p class="code">
@@ -174,7 +197,7 @@
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)<br/>
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)<br/>
             msg = '%s:%s' %(hex(uuid.getnode())[2:-1].zfill(12), str(os.urandom(10)).encode('hex'))<br/>
-            while time.sleep(2) == None: sock.sendto(msg, ('224.6.6.6', 8005)) " &
+            while time.sleep(2) == None: sock.sendto(msg, ('224.6.6.6', 8005)) " &amp;
         </p>
 
         <p>

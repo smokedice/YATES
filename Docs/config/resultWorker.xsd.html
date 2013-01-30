@@ -1,0 +1,245 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
+        </style>
+    </head>
+    <body>    <div class="config">
+      <h4>resultWorker</h4>
+      <div class="config-text">Cardinality: undefined..undefined
+      <br />Description:
+      <br />
+      <p>Configuration for how to deliver the results</p>Children: 
+      <div class="config">
+        <h4>output</h4>
+        <div class="config-text">Cardinality: undefined..undefined
+        <br />Description:
+        <br />
+        <p>Multiple types of output. All of the output data that is
+        recorded can be located within folder configured within the
+        attribute "location"</p>Children: 
+        <div class="config">
+          <h4>sqlLite</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Records all the results (but no logs) within a SQLite
+          database. If clear is set to true the database will be
+          deleted each time a test execution is
+          performed</p>Children: 
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div>
+          <div class="config">
+            <h4>clear</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>logFile</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Log all peer state transitions and a minimalistic
+          amount of data for each test result within a human
+          readable log file. If clear is set to true the log file
+          will be cleared each time a test execution is
+          performed</p>Children: 
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div>
+          <div class="config">
+            <h4>clear</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>csvFile</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>CSV file including all test results. If clear is set
+          to true the CSV file will be wiped each time a test
+          execution is performed</p>Children: 
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div>
+          <div class="config">
+            <h4>clear</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>fileSystem</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Log all results to the file system (includes xml
+          result, stdout, stderr, dbus logs, etc). These results
+          are structured in the file system so that the top level
+          folder represents the test details (name, class, etc).
+          The next level is the unique execution ID (relates to the
+          Sqlite database). The unique execution ID is to provide
+          multiple containers for each iteration of the test.
+          Within the execution ID folder all of logs are
+          located.</p>Children: 
+          <div class="config">
+            <h4>clear</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div>
+          <div class="config">
+            <h4>archive</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br />Children: 
+            <div class="config">
+              <h4>name</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br />Description:
+              <br />
+              <p>Where to archive the results so that each test
+              execution can be saved for later use.</p></div>
+            </div>
+            <div class="config">
+              <h4>format</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br />Description:
+              <br />
+              <p>Type of archive to use. zip, tar, tar.gz,
+              tgz</p></div>
+            </div>
+            <div class="config">
+              <h4>location</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br />Description:
+              <br />
+              <p>Location of a file on the file system. Paths can
+              be relative or static. ./file ../file
+              /root/file</p></div>
+            </div></div>
+          </div>
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>trmsLoggers</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Configuration for TRMS Loggers</p>Children: 
+          <div class="config">
+            <h4>trms</h4>
+            <div class="config-text">Cardinality: 0..unbounded
+            <br />Description:
+            <br />
+            <p>TRMS details for uploading results after a test
+            execution has completed</p>Children: 
+            <div class="config">
+              <h4>url</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div>
+            <div class="config">
+              <h4>username</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div>
+            <div class="config">
+              <h4>password</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div>
+            <div class="config">
+              <h4>enabled</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>location</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div>
+      <div class="config">
+        <h4>customLogFilters</h4>
+        <div class="config-text">Cardinality: undefined..undefined
+        <br />Description:
+        <br />
+        <p>Retrieve a file from the slave after a test
+        execution.</p>Children: 
+        <div class="config">
+          <h4>customLogFilter</h4>
+          <div class="config-text">Cardinality: 0..unbounded
+          <br /></div>
+        </div></div>
+      </div></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
+        </style>
+    </head>
+    <body>    <div class="config">
+      <h4>routes</h4>
+      <div class="config-text">Cardinality: undefined..undefined
+      <br />Description:
+      <br />
+      <p>All the details relating to each slave</p>Children: 
+      <div class="config">
+        <h4>route</h4>
+        <div class="config-text">Cardinality: 1..unbounded
+        <br />Description:
+        <br />
+        <p>Details relating to a single slave</p>Children: 
+        <div class="config">
+          <h4>macAddr</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Lowercase string in hex encoding that represents the
+          slaves mac address. All colons should be removed and only
+          a-f 0-9 characters are allowed</p></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div>
+        <div class="config">
+          <h4>name</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div>
+        <div class="config">
+          <h4>uniqueNames</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div>
+        <div class="config">
+          <h4>uniqueIPs</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div></div>
+    </div>
+  </body>
+</html>

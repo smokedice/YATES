@@ -1,0 +1,186 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
+        </style>
+    </head>
+    <body>
+    <div class="config">
+      <h4>filters</h4>
+      <div class="config-text">Cardinality: undefined..undefined
+      <br />Description:
+      <br />
+      <p>Customizable filters to provide subsets of
+      tests</p>Children: 
+      <div class="config">
+        <h4>TestFilter</h4>
+        <div class="config-text">Cardinality: 0..unbounded
+        <br />Description:
+        <br />
+        <p>Filters tests by a given set of
+        characteristics</p>Children: 
+        <div class="config">
+          <h4>direction</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br /></div>
+        </div>
+        <div class="config">
+          <h4>parameter</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Which value to filter the tests by</p></div>
+        </div>
+        <div class="config">
+          <h4>values</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Regular expression or literal text to match the values
+          to</p>Children: 
+          <div class="config">
+            <h4>value</h4>
+            <div class="config-text">Cardinality: 0..unbounded
+            <br />Description:
+            <br />
+            <p>Regular expression or literal text to match the
+            value to</p>Children: 
+            <div class="config">
+              <h4>type</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div></div>
+          </div>
+          <div class="config">
+            <h4>type</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div>
+      <div class="config">
+        <h4>PriorityFilter</h4>
+        <div class="config-text">Cardinality: 0..1
+        <br />Description:
+        <br />
+        <p>Prioritise the tests by given parameters</p>Children: 
+        <div class="config">
+          <h4>direction</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br /></div>
+        </div>
+        <div class="config">
+          <h4>parameter</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Which value to filter the tests by</p></div>
+        </div>
+        <div class="config">
+          <h4>values</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Regular expression or literal text to match the values
+          to</p>Children: 
+          <div class="config">
+            <h4>value</h4>
+            <div class="config-text">Cardinality: 0..unbounded
+            <br />Description:
+            <br />
+            <p>Regular expression or literal text to match the
+            value to</p>Children: 
+            <div class="config">
+              <h4>type</h4>
+              <div class="config-text">Cardinality:
+              undefined..undefined
+              <br /></div>
+            </div></div>
+          </div>
+          <div class="config">
+            <h4>type</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div>
+      <div class="config">
+        <h4>TestPackFilter</h4>
+        <div class="config-text">Cardinality: 0..1
+        <br />Description:
+        <br />
+        <p>Include tests where their test ID is within the test
+        pack. The testpack format is a file where each line begins
+        with a number or a hash. After a test ID and a space,
+        anything can follow (comments).</p>Children: 
+        <div class="config">
+          <h4>locations</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br />Description:
+          <br />
+          <p>Locations of where the testpacks exists within the
+          filesystem</p>Children: 
+          <div class="config">
+            <h4>location</h4>
+            <div class="config-text">Cardinality: 0..unbounded
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div></div>
+    </div>
+  </body>
+</html>

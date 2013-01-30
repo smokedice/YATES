@@ -1,0 +1,105 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
+        </style>
+    </head>
+    <body>
+    <div class="config">
+      <h4>execution</h4>
+      <div class="config-text">Cardinality: undefined..undefined
+      <br />Description:
+      <br />
+      <p>Most common set of parameters that could change between
+      test suite executions</p>Children: 
+      <div class="config">
+        <h4>iterations</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>Iterate the test suite. A value of 0 equates to
+        unlimited iterations</p></div>
+      </div>
+      <div class="config">
+        <h4>defaultTimeout</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>If a test does not detail a 'timeout' within it's
+        docstring, this value is used</p></div>
+      </div>
+      <div class="config">
+        <h4>distributionAlgorithm</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>How to distribute the tests between the slaves. This is
+        multiplied by the iterations to provide the number of
+        results expected. SingleExecution: Execute each test on a
+        single box once ExecutionOnEachBox: Execute each test on
+        each box ExecutionOnEachBoxEvenly: Execute each test on
+        each box, but attempt to run a single instance of each test
+        at a time</p></div>
+      </div>
+      <div class="config">
+        <h4>rebootPerTest</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>If true, reboot the slave after each test</p></div>
+      </div>
+      <div class="config">
+        <h4>rebootNewBoxes</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>If true, reboot the slave when first
+        discovered</p></div>
+      </div>
+      <div class="config">
+        <h4>manualInspection</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br /></div>
+      </div>
+      <div class="config">
+        <h4>stopWhenAllDead</h4>
+        <div class="config-text">Cardinality: 1..1
+        <br />Description:
+        <br />
+        <p>If true and all slaves are dead, stop the
+        execution</p></div>
+      </div></div>
+    </div>
+  </body>
+</html>

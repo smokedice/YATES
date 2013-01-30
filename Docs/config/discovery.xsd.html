@@ -1,0 +1,194 @@
+<html>
+    <head>
+        <title>YATES - Yet Another Test Execution System</title>
+        <style type="text/css">
+            body {
+                width : 600px;
+                padding: 0px;
+                margin: 10px 0px 10px 10px;
+            }
+            p.code {
+                width:90%;
+                background-color: #F9F9F9;
+                border-color: #4D5017;
+                border-width: 1px;
+                border-style: solid;
+                padding: 5px;
+            } 
+
+            p, ul { margin-left: 10px; margin-top: 0px; }
+            ul { padding-left: 20px; }
+            h1, h2, h3 { margin-bottom: 0px; }
+            embed { margin-left: 10px; margin-bottom: 15px; }
+    
+            div.config { 
+                margin-left: 10px;
+                margin-right: 2px;
+                margin-bottom: 2px;
+                border-style: solid;
+                border-width: 1px;
+                padding-left: 10px; 
+            }
+
+            div.config { padding: 5px; }
+            div.config h4 { margin: 0; margin-top: 5px; }
+            div.config-text{ padding: 0px; }
+        </style>
+    </head>
+    <body>
+    <div class="config">
+      <h4>discovery</h4>
+      <div class="config-text">Cardinality: 1..1
+      <br />Description:
+      <br />
+      <p>Configuration for discovering test cases from provided
+      test suites</p>Children: 
+      <div class="config">
+        <h4>PythonNose</h4>
+        <div class="config-text">Cardinality: 0..10
+        <br />Description:
+        <br />
+        <p>Discovers tests from a database or a Python test suite.
+        The enabled attribute disables the discovery of PythonNose
+        tests if they are not required within a test
+        run.</p>Children: 
+        <div class="config">
+          <h4>DiscoveryWorker</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Discovers tests by reviewing the test suite provided.
+          The filters configuration can be used to filter the tests
+          if not all tests are required. The enabled attribute can
+          be used to disable the discovery of tests through the
+          test files.</p>Children: 
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>DatabaseReader</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Discovers tests by reading a SQLite database. These
+          tests can be filtered by configuring the filter XML or
+          the database can be tailored before the test
+          execution.</p>Children: 
+          <div class="config">
+            <h4>location</h4>
+            <div class="config-text">Cardinality: 0..1
+            <br />Description:
+            <br />
+            <p>Database location. A valid location can be either
+            relative or static e.g ../../db.sqlite, ./db.sqlite,
+            /root/db.sqlite.</p></div>
+          </div>
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>SourceLocation</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Test suite source code located. The source location is
+          broken up into two pieces to provide the facility of
+          selecting a certain folder within a test suite to
+          discover tests within (basic filter).</p>Children: 
+          <div class="config">
+            <h4>testRoot</h4>
+            <div class="config-text">Cardinality: 1..1
+            <br />Description:
+            <br />
+            <p>Location where the fully test suite (utils,
+            configuration files, etc) is located. Value can be a
+            relative or static path e.g ../tests, ./tests,
+            /root/tests</p></div>
+          </div>
+          <div class="config">
+            <h4>testPath</h4>
+            <div class="config-text">Cardinality: 0..1
+            <br />Description:
+            <br />
+            <p>Folder located within the testRoot. This can be used
+            to filter a subset of tests.</p></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div>
+      <div class="config">
+        <h4>StbTester</h4>
+        <div class="config-text">Cardinality: 0..10
+        <br />Description:
+        <br />
+        <p>Discovers tests from a StbTester test suite. The enabled
+        attribute disalbes the discovery of StbTester tests if the
+        are not required within a test run.</p>Children: 
+        <div class="config">
+          <h4>DiscoveryWorker</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Discovers tests by reviewing the test suite provided.
+          The filters configuration can be used to filter the tests
+          if not all tests are required. The enabled attribute can
+          be used to disable the discovery of tests through the
+          test files.</p>Children: 
+          <div class="config">
+            <h4>enabled</h4>
+            <div class="config-text">Cardinality:
+            undefined..undefined
+            <br /></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>SourceLocation</h4>
+          <div class="config-text">Cardinality: 1..1
+          <br />Description:
+          <br />
+          <p>Test suite source code located. The source location is
+          broken up into two pieces to provide the facility of
+          selecting a certain folder within a test suite to
+          discover tests within (basic filter).</p>Children: 
+          <div class="config">
+            <h4>testRoot</h4>
+            <div class="config-text">Cardinality: 1..1
+            <br />Description:
+            <br />
+            <p>Location where the fully test suite (utils,
+            configuration files, etc) is located. Value can be a
+            relative or static path e.g ../tests, ./tests,
+            /root/tests</p></div>
+          </div>
+          <div class="config">
+            <h4>testPath</h4>
+            <div class="config-text">Cardinality: 0..1
+            <br />Description:
+            <br />
+            <p>Folder located within the testRoot. This can be used
+            to filter a subset of tests.</p></div>
+          </div></div>
+        </div>
+        <div class="config">
+          <h4>enabled</h4>
+          <div class="config-text">Cardinality:
+          undefined..undefined
+          <br /></div>
+        </div></div>
+      </div></div>
+    </div>
+  </body>
+</html>
