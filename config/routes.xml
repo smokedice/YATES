@@ -1,7 +1,6 @@
 <routes xmlns="routes"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="routes validation/routes.xsd">
- <!-- Humax TAS Test Boxes -->
  <route name="test01" enabled="true">
     <!-- 192.168.16.145 -->
     <macAddr>dcd3211c9fdf</macAddr> 
