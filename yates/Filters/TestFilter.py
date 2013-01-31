@@ -111,11 +111,11 @@ class TestFilter(object):
         @return: True or False depending on whether the test attribute value
             is in the configured value list
         '''
-        return content == value.PCDATA
+        return str(content) == str(value.PCDATA)
 
     def __matchesRegex(self, value, test, content):
         """ Matches the value against a regex pattern """
-        if re.match(value.PCDATA, content):
+        if re.match(str(value.PCDATA), str(content)):
             return True
         return False
 
