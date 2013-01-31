@@ -56,7 +56,6 @@ class TestDiscoveryWorker(object):
             processes.append(process)
 
         queue.close()
-        import pdb; pdb.set_trace()
         return tests
 
     def __processTest(self, test_root, file_path, queue):

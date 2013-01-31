@@ -4,6 +4,11 @@
  targetNamespace="exec"
  xmlns:exec = "exec">
   <xs:element name="execution">
+    <xs:annotation>
+      <xs:documentation>
+        Most common set of parameters that could change between test suite executions
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="exec:iterations" minOccurs="1" maxOccurs="1" />
@@ -27,46 +32,34 @@
         </xs:element>
       </xs:sequence>
     </xs:complexType>
-    <xs:annotation>
-      <xs:documentation>
-        Most common set of parameters that could change between test suite executions
-      </xs:documentation>
-    </xs:annotation>
   </xs:element>
   <xs:element name="iterations">
+   <xs:annotation>
+    <xs:documentation>
+        Iterate the test suite. A value of 0 equates to unlimited iterations
+    </xs:documentation>
+   </xs:annotation>
    <xs:simpleType>
     <xs:restriction base="xs:integer">
      <xs:minInclusive value="0" />
      <xs:maxInclusive value="100" />
     </xs:restriction>
    </xs:simpleType>
-   <xs:annotation>
-    <xs:documentation>
-        Iterate the test suite. A value of 0 equates to unlimited iterations
-    </xs:documentation>
-   </xs:annotation>
   </xs:element>
   <xs:element name="defaultTimeout">
-    <xs:simpleType >
-        <xs:restriction base="xs:int">
-            <xs:minInclusive value="5" />
-        </xs:restriction>
-    </xs:simpleType>
     <xs:annotation>
       <xs:documentation>
             If a test does not detail a 'timeout' within it's docstring,
             this value is used
       </xs:documentation>
     </xs:annotation>
+    <xs:simpleType >
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="5" />
+        </xs:restriction>
+    </xs:simpleType>
   </xs:element>
   <xs:element name="distributionAlgorithm">
-    <xs:simpleType>
-      <xs:restriction base="xs:string">
-        <xs:enumeration value="SingleExecution" />
-        <xs:enumeration value="ExecutionOnEachBox" />
-        <xs:enumeration value="ExecutionOnEachBoxEvenly" />
-      </xs:restriction>
-    </xs:simpleType>
     <xs:annotation>
       <xs:documentation>
             How to distribute the tests between the slaves. This is
@@ -78,5 +71,12 @@
             ExecutionOnEachBoxEvenly: Execute each test on each box, but attempt to run a single instance of each test at a time
       </xs:documentation>
     </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="SingleExecution" />
+        <xs:enumeration value="ExecutionOnEachBox" />
+        <xs:enumeration value="ExecutionOnEachBoxEvenly" />
+      </xs:restriction>
+    </xs:simpleType>
   </xs:element>
 </xs:schema>

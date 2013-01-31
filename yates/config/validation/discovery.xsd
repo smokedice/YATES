@@ -3,20 +3,27 @@
  elementFormDefault="qualified"
  targetNamespace="discovery"
  xmlns:discovery = "discovery">
-  <xs:element name="discovery" minOccurs="1" maxOccurs="1">
+  <xs:element name="discovery">
+    <xs:annotation>
+        <xs:documentation>
+            Configuration for discovering test cases from provided test suites
+        </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="discovery:PythonNose" minOccurs="0" maxOccurs="10" />
         <xs:element ref="discovery:StbTester" minOccurs="0" maxOccurs="10" />
       </xs:sequence>
     </xs:complexType>
-    <xs:annotation>
-        <xs:documentation>
-            Configuration for discovering test cases from provided test suites
-        </xs:documentation>
-    </xs:annotation>
   </xs:element>
   <xs:element name="PythonNose">
+    <xs:annotation>
+        <xs:documentation>
+            Discovers tests from a database or a Python test suite.
+            The enabled attribute disables the discovery of 
+            PythonNose tests if they are not required within a test run.
+        </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="discovery:DiscoveryWorker" minOccurs="1" maxOccurs="1" />
@@ -25,22 +32,8 @@
       </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
-    <xs:annotation>
-        <xs:documentation>
-            Discovers tests from a database or a Python test suite.
-            The enabled attribute disables the discovery of 
-            PythonNose tests if they are not required within a test run.
-        </xs:documentation>
-    </xs:annotation>
   </xs:element>
   <xs:element name="StbTester">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="discovery:DiscoveryWorker" minOccurs="1" maxOccurs="1" />
-        <xs:element ref="discovery:SourceLocation" minOccurs="1" maxOccurs="1" />
-      </xs:sequence>
-      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
-    </xs:complexType>
     <xs:annotation>
         <xs:documentation>
             Discovers tests from a StbTester test suite.
@@ -48,11 +41,15 @@
             tests if the are not required within a test run.
         </xs:documentation>
     </xs:annotation>
-  </xs:element>
-  <xs:element name="DiscoveryWorker">
     <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="discovery:DiscoveryWorker" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="discovery:SourceLocation" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
     </xs:complexType>
+  </xs:element>
+  <xs:element name="DiscoveryWorker">
     <xs:annotation>
         <xs:documentation>
             Discovers tests by reviewing the test suite provided.
@@ -61,26 +58,11 @@
             be used to disable the discovery of tests through the test files.
         </xs:documentation>
     </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+    </xs:complexType>
   </xs:element>
   <xs:element name="DatabaseReader">
-    <xs:complexType>
-        <xs:sequence>
-            <xs:element name="location" minOccurs="0" maxOccurs="1">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+)$"></xs:pattern>
-                    </xs:restriction>
-                </xs:simpleType>
-                <xs:annotation>
-                    <xs:documentation>
-                        Database location. A valid location can be either relative or
-                        static e.g ../../db.sqlite, ./db.sqlite, /root/db.sqlite.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-        <xs:attribute name="enabled" type="xs:boolean" use="required" />
-    </xs:complexType>
     <xs:annotation>
         <xs:documentation>
             Discovers tests by reading a SQLite database. These tests 
@@ -88,14 +70,26 @@
             the database can be tailored before the test execution.
         </xs:documentation>
     </xs:annotation>
-  </xs:element>
-  <xs:element name="SourceLocation">
     <xs:complexType>
         <xs:sequence>
-            <xs:element maxOccurs="1" minOccurs="1" ref="discovery:testRoot"/>
-            <xs:element maxOccurs="1" minOccurs="0" ref="discovery:testPath"/>
+            <xs:element name="location" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Database location. A valid location can be either relative or
+                        static e.g ../../db.sqlite, ./db.sqlite, /root/db.sqlite.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+)$"></xs:pattern>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
         </xs:sequence>
+        <xs:attribute name="enabled" type="xs:boolean" use="required" />
     </xs:complexType>
+  </xs:element>
+  <xs:element name="SourceLocation">
     <xs:annotation>
         <xs:documentation>
             Test suite source code located. The source location is broken up 
@@ -103,13 +97,14 @@
             folder within a test suite to discover tests within (basic filter).
         </xs:documentation>
     </xs:annotation>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" ref="discovery:testRoot"/>
+            <xs:element maxOccurs="1" minOccurs="0" ref="discovery:testPath"/>
+        </xs:sequence>
+    </xs:complexType>
   </xs:element>
   <xs:element name="testRoot">
-    <xs:simpleType>
-        <xs:restriction base="xs:string">
-            <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+[^/]{1})$"></xs:pattern>
-        </xs:restriction>
-    </xs:simpleType>
     <xs:annotation>
         <xs:documentation>
             Location where the fully test suite
@@ -118,18 +113,23 @@
             e.g ../tests, ./tests, /root/tests
         </xs:documentation>
     </xs:annotation>
-  </xs:element>
-  <xs:element name="testPath">
     <xs:simpleType>
         <xs:restriction base="xs:string">
-            <xs:pattern value="([a-zA-Z0-9]{1}[a-zA-Z0-9_\-/\.]*)?"></xs:pattern>
+            <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+[^/]{1})$"></xs:pattern>
         </xs:restriction>
     </xs:simpleType>
+  </xs:element>
+  <xs:element name="testPath">
     <xs:annotation>
         <xs:documentation>
             Folder located within the testRoot. This can be used to filter
             a subset of tests.
         </xs:documentation>
     </xs:annotation>
+    <xs:simpleType>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([a-zA-Z0-9]{1}[a-zA-Z0-9_\-/\.]*)?"></xs:pattern>
+        </xs:restriction>
+    </xs:simpleType>
   </xs:element>
 </xs:schema>
