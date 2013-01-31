@@ -8,8 +8,8 @@ CONFIG_FILES = glob.glob(join(CONFIG_DIR, "*.xml"))
 CONFIG_XSDS = glob.glob(join(CONFIG_DIR, "validation", "*.xsd"))
 
 DOCS_DIR = join(os.path.dirname(__file__), "yates", "Docs")
-DOCS_FILES = glob.glob(join(CONFIG_DIR, "*.*"))
-DOCS_CONF_FILES = glob.glob(join(CONFIG_DIR, "config", "*.html"))
+DOCS_FILES = glob.glob(join(DOCS_DIR, "*.*"))
+DOCS_CONF_FILES = glob.glob(join(DOCS_DIR, "config", "*.html"))
 
 ROOT = join(get_python_lib(), 'yates')
 
@@ -42,10 +42,10 @@ setup(
     license='',
     description='Yet Another Test Execution System',
     data_files=[
-        (join(ROOT, '/config'), CONFIG_FILES),
-        (join(ROOT, '/config/validation'), CONFIG_XSDS),
-        (join(ROOT, '/Docs'), DOCS_FILES),
-        (join(ROOT, '/yates/Docs/config'), DOCS_CONF_FILES),
+        (join(ROOT, 'config'), CONFIG_FILES),
+        (join(ROOT, 'config/validation'), CONFIG_XSDS),
+        (join(ROOT, 'Docs'), DOCS_FILES),
+        (join(ROOT, 'Docs/config'), DOCS_CONF_FILES),
     ],
     #long_description=open('README.rst').read(),
     install_requires=[
