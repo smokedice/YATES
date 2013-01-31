@@ -48,8 +48,8 @@ setup(
         (join(ROOT, 'Docs/config'), DOCS_CONF_FILES),
     ],
     package_data={
-        'yates.Discovery.STBTester' : ['yates/Discovery/STBTester/STBTesterScript'],
-        'yates.Discovery.PythonNose' : ['yates/Discovery/PythonNose/PythonNoseScript'],
+        'yates.Discovery.STBTester' : ['STBTesterScript'],
+        'yates.Discovery.PythonNose' : ['PythonNoseScript'],
     },
     #long_description=open('README.rst').read(),
     install_requires=[
