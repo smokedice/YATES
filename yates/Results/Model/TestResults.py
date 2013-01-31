@@ -3,7 +3,7 @@ from Results.Model.Peer import Peer
 from Results.Model.TestStates import TestStates
 from TestDetails import TestDetails
 from TestExecutionDetails import TestExecutionDetails
-from peewee.peewee import PrimaryKeyField, ForeignKeyField, BooleanField, \
+from peewee import PrimaryKeyField, ForeignKeyField, BooleanField, \
     TextField, IntegerField
 from ModelUtils import DateTimeField
 

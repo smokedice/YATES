@@ -1,5 +1,5 @@
 from Results.Model.ModelUtils import MasterBaseModel
-from peewee.peewee import PrimaryKeyField, TextField, IntegerField, BooleanField
+from peewee import PrimaryKeyField, TextField, IntegerField, BooleanField
 
 class Tests(MasterBaseModel):
     testId = PrimaryKeyField(db_column = 'id')

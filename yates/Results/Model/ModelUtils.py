@@ -1,5 +1,5 @@
 from datetime import datetime
-from peewee.peewee import Model, SqliteDatabase, Column, Field
+from peewee import Model, SqliteDatabase, Column, Field
 import time
 
 class ResultBaseModel(Model):

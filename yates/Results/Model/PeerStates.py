@@ -1,6 +1,6 @@
 from Results.Model.Peer import Peer
 from Results.Model.ModelUtils import DateTimeField, ResultBaseModel
-from peewee.peewee import PrimaryKeyField, ForeignKeyField, TextField
+from peewee import PrimaryKeyField, ForeignKeyField, TextField
 
 class PeerStates(ResultBaseModel):
     peerStateId = PrimaryKeyField(db_column = 'peerStateId')

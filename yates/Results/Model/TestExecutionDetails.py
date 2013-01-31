@@ -1,6 +1,6 @@
 from Results.Model.ModelUtils import ResultBaseModel
 from ModelUtils import DateTimeField
-from peewee.peewee import PrimaryKeyField, TextField, CharField, IntegerField
+from peewee import PrimaryKeyField, TextField, CharField, IntegerField
 
 class TestExecutionDetails(ResultBaseModel):
     executionId = PrimaryKeyField(db_column = 'executionId')

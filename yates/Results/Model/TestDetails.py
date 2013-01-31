@@ -1,5 +1,5 @@
 from Results.Model.ModelUtils import ResultBaseModel
-from peewee.peewee import PrimaryKeyField, TextField, BooleanField, \
+from peewee import PrimaryKeyField, TextField, BooleanField, \
     BigIntegerField
 
 class TestDetails(ResultBaseModel):
