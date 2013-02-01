@@ -39,7 +39,7 @@ class CSVFileLogger(object):
             %(ipAddr, macAddr, test.testId,
             test.startTime, test.duration, time.time(), test.state))
 
-    def reportIteration(self, iteration):
+    def logIteration(self, iteration):
         pass
 
     def shutdown(self):

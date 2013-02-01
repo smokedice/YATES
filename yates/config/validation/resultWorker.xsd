@@ -71,12 +71,15 @@
         <xs:documentation>
             Log all peer state transitions and a minimalistic amount of data for
             each test result within a human readable log file. If clear is set to
-            true the log file will be cleared each time a test execution is performed
+            true the log file will be cleared each time a test execution is performed.
+
+            The verbose attribute writes the log messages to stdout also.
         </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:attribute name="enabled" use="required" type="xs:boolean"/>
       <xs:attribute name="clear" use="required" type="xs:boolean"/>
+      <xs:attribute name="verbose" use="required" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="csvFile">

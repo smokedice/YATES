@@ -87,26 +87,3 @@ class TestDistributor(object):
         @return {peer.macAddress:[tests]}
         '''
         return self.testDistributor.execMap
-
-#    def scheduleNextStage(self, obj):
-#        """ Test has requested another stage after reboot """
-#        '''
-#        test = copy.copy(self.testDistributor.execMap[obj.peerMacAddress][-1])
-#        test.testFile = obj.scriptLocation
-#        test.testClass = obj.className
-#        test.testMethod = obj.methodName
-#        test.testTimeout = obj.methodTimeout
-#        test.testStage = True
-#        print ' **> Adding scheduled test for peer %s' % obj.peerMacAddress
-#        self.scheduledTests[obj.peerMacAddress] = test
-#        '''
-#        pass
-#
-#    def clearNextStage(self, obj):
-#        """ Test has requested to clear all planned stages """
-#        '''
-#        if obj.peerMacAddress in self.scheduledTests.keys():
-#            print ' **> Removing scheduled test for peer %s' % obj.peerMacAddress
-#            self.scheduledTests.pop(signal.peerMacAddress)
-#        '''
-#        pass

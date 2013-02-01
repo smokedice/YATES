@@ -4,7 +4,7 @@
     xsi:schemaLocation="resultWorker validation/resultWorker.xsd">
     <output location="/tmp/results">
         <sqlLite enabled="true" clear="true" />
-        <logFile enabled="true" clear="true" />
+        <logFile enabled="true" clear="true" verbose="true" />
         <csvFile enabled="true" clear="true" />
         <fileSystem enabled="true">
             <clear>true</clear>

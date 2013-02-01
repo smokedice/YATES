@@ -104,8 +104,7 @@ class FileSystemLogger(object):
     def __templateName(self, name):
         return name.replace("%d", strftime("%Y-%m-%dT%H:%M:%S"))
 
-    def reportIteration(self, iteration):
-        pass
+    def logIteration(self, iteration): pass
 
     def shutdown(self):
         """ Archive logged content """

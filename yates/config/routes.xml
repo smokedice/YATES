@@ -5,15 +5,15 @@ xsi:schemaLocation="routes validation/routes.xsd">
     <!-- 192.168.16.145 -->
     <macAddr>dcd3211c9fdf</macAddr> 
  </route>
- <route name="test02" enabled="false">
+ <route name="test02" enabled="true">
     <!-- 192.168.19.119 -->
     <macAddr>0003784b7ab6</macAddr>
  </route>
- <route name="test03" enabled="false">
+ <route name="test03" enabled="true">
     <!-- 192.168.19.63 -->
     <macAddr>0003784b7aa4</macAddr>
  </route>
- <route name="test04" enabled="false">
+ <route name="test04" enabled="true">
     <!-- 192.168.16.170 -->
     <macAddr>dcd3211c9f08</macAddr>
  </route>
