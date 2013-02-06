@@ -43,12 +43,15 @@ class UDPServer(Process):
 
     def run(self):
         from twisted.internet import reactor
+        from twisted.python import log
+
         reactor.listenMulticast(8005,
             HolaListener(self.queue),
             listenMultiple = True)
 
         self.reactor = reactor
-        reactor.callLater(1, self.__checkShutdown)         
+        reactor.callLater(1, self.__checkShutdown)
+        log.defaultObserver.stop()
         reactor.run()                                      
 
     def getHeartBeats(self, count = 2):

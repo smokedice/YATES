@@ -1,15 +1,14 @@
-import time, sys
+from Utils.Logging import LogManager
+
+import time, sys, subprocess, re
 from Queue import Empty
 from multiprocessing import Value
 from multiprocessing.process import Process
 from multiprocessing.queues import Queue
-from Utils.Logging import LogManager
-
-import subprocess
-import re
 
 from twisted.conch.ssh import transport, userauth, connection, channel, common
 from twisted.internet import defer, protocol, reactor, task
+from twisted.python import log
 
 class Status(object):
     CLOSED = 0
@@ -163,6 +162,7 @@ class SSHClient(Process):
         check = task.LoopingCall(self.__ping)
         check.start(2.0)
         reactor.callLater(self.timeout, self.__timeout)
+        log.defaultObserver.stop()
         reactor.run()
         self.endTime.value = time.time()
         self.queue.close()
