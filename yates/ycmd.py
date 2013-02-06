@@ -7,18 +7,18 @@ VERSION = '0.01'
 class CMDLine(ExecutionOrganiser):
     def __init__(self):
         ExecutionOrganiser.__init__(self, VERSION)
-        self.argumentParser = ArgumentParser()
-        if self.argumentParser.monitor: return
-        if not self.argumentParser.parseArgs():
-            sys.exit(0)
 
     def go(self):
         try:
+            self.argumentParser = ArgumentParser()
+            self.argumentParser.parse_args()
+
             if self.argumentParser.monitor:
                 self.__monitor()
             else:
                 ExecutionOrganiser._go(self)
                 self.__runTests()
+        except SystemExit: pass
         except: print traceback.format_exc()
         self._shutdown()
 

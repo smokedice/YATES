@@ -15,14 +15,11 @@ class ExecutionOrganiser(object):
         self.udpServer = UDPServer(self.udpQueue)
         self.tmpDir = tempfile.mkdtemp('tmpTAS')
 
-        self.config = ConfigurationManager()
         os.environ['TAS_TMP'] = self.tmpDir
         os.environ['TAS_VERSION'] = version
 
-        conf = ConfigurationManager().getConfiguration('execution').configuration
         self.logger = LogManager().getLogger('Main')
         self.peers = {}
-
         self.root = os.getcwd()
         os.chdir(self.tmpDir)
 
