@@ -47,7 +47,12 @@ class TestGatherManager(object):
     def gatherTests(self):
         """ Discover all tests from all sources """
         tests, content = [], {}
-        #content = { 'PythonNoseSrc' : testLoc, execName : self.__execScript }
+        execution = ConfigurationManager().getConfiguration('execution').configuration
+
+        if execution.scripts.enabled == 'true':
+            if not os.path.exists(execution.scripts.PCDATA):
+                raise Exception('Invalid configuration. Executions scripts do not exist')
+            content['tools'] = execution.scripts.PCDATA
 
         if len(self.__testCreators) == 0:
             raise Exception('No enabled test creators found')
@@ -79,7 +84,7 @@ class TestGatherManager(object):
         desc = descBuffer.getvalue()
         descBuffer.close()
  
-        testSuiteName = "FIXME"
+        testSuiteName = "FIXME" # TODO: where does this come from?
         dateTime = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%dT%H:%M:%S')
         macAddress = Network.getMacAddress()
         executionName = "%s_%s_%s" % (testSuiteName, dateTime, macAddress)
@@ -99,8 +104,8 @@ class TestGatherManager(object):
 
         for name, path in paths.items():
             tar.add(path, name)
-        tar.close()
 
+        tar.close()
         return tar.name
 
     def __getShortFilterDesc(self):

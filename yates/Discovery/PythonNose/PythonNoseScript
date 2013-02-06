@@ -19,6 +19,11 @@ xunitLog=$workspace/logs/xunit.xml
 vars=`python -c "f = open('config','r'); lines = f.readlines(); f.close();
 print '\n'.join([ 'export \"%s\"=\"%s\"' %(k,v) for k,v in [ y.strip().lower().split('=') for y in lines ]])"`
 eval $vars
+export LOG_DIR="`pwd`/logs"
+
+if [ -f $workspace/tools/before ]; then
+    bash $workspace/tools/before
+fi
 
 cd PythonNoseTests
 export PYTHONPATH="$PYTHONPATH:`pwd`"
@@ -31,12 +36,25 @@ if [ `ps aux | awk ' { print $2 } ' | grep -c $dbusMonitorPID` -eq 0 ]; then
     dbus-monitor >$dbusLog 2>&1 &
 fi
 
+toolPID=""
+if [ -f $workspace/tools/during ]; then
+    bash $workspace/tools/during &
+    toolPID=$!
+fi
+
 nosetests -sv --nocapture --with-xunit --xunit-file=$xunitLog $executionAttr >$stdoutLog 2>$stderrLog
+
+# Clean up
+if ps -p $toolPID >/dev/null 2>&1; then
+    kill $toolPID
+fi
+killall dbus-monitor
+
+if [ -f $workspace/tools/after ]; then
+    bash $workspace/tools/after
+fi
 
 # Copy custom logs
 if [[ `ls | grep -c "*.log"` > 0 ]]; then
     cp -rf *.log $workspace/logs 
 fi
-
-# Fix for NetworkManager race condition
-killall dbus-monitor

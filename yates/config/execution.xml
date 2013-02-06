@@ -1,11 +1,12 @@
 <execution xmlns="exec"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="exec validation/execution.xsd">
-    <iterations>0</iterations>
+    <iterations>1</iterations>
     <defaultTimeout>300</defaultTimeout>
     <distributionAlgorithm>ExecutionOnEachBoxEvenly</distributionAlgorithm>
     <rebootPerTest>false</rebootPerTest>
     <rebootNewBoxes>false</rebootNewBoxes>
     <manualInspection>false</manualInspection>
     <stopWhenAllDead>true</stopWhenAllDead>
+    <scripts enabled="true">/tmp/tools</scripts>
 </execution>

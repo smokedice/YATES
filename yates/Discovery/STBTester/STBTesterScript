@@ -28,6 +28,10 @@ vars=`python -c "f = open('config','r'); lines = f.readlines(); f.close();
 print '\n'.join([ 'export \"%s\"=\"%s\"' %(k,v) for k,v in [ y.strip().split('=', 1) for y in lines ]])"`
 eval $vars
 
+if [ -f $workspace/tools/before ]; then
+    bash $workspace/tools/before
+fi
+
 run() {
     local error=0
     echo "<?xml version='1.0' encoding='UTF-8'?>"
@@ -208,4 +212,19 @@ testcases() {
     for t in $(testscripts | grep $suite); do basename $(dirname $t); done
 }
 
+toolPID=""
+if [ -f $workspace/tools/during ]; then
+    bash $workspace/tools/during &
+    toolPID=$!
+fi
+
 run > "$workspace/logs/xunit.xml"
+
+# Clean up
+if ps -p $toolPID >/dev/null 2>&1; then
+    kill $toolPID
+fi
+
+if [ -f $workspace/tools/after ]; then
+    bash $workspace/tools/after
+fi

@@ -30,6 +30,7 @@
             <xs:documentation>If true and all slaves are dead, stop the execution</xs:documentation>
            </xs:annotation>
         </xs:element>
+        <xs:element ref="exec:scripts" minOccurs="1" maxOccurs="1" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -78,5 +79,27 @@
         <xs:enumeration value="ExecutionOnEachBoxEvenly" />
       </xs:restriction>
     </xs:simpleType>
+  </xs:element>
+  <xs:simpleType name="location">
+     <xs:restriction base="xs:string">
+        <xs:pattern value="(\.|[\.]{0,2}/[a-zA-Z0-9_\-/\.]+[^/]{1})$"></xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="scripts">
+    <xs:annotation>
+        <xs:documentation>
+            Location where scripts are located for
+            executing before, during and after execution.
+            Value can be a relative or static path
+            e.g ../tools, ./tools, /root/tools
+        </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+        <xs:simpleContent>
+            <xs:extension base="exec:location">
+              <xs:attribute name="enabled" use="required" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
   </xs:element>
 </xs:schema>
