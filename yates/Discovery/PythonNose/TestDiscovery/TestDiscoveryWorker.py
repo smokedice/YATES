@@ -3,7 +3,7 @@ from Discovery.PythonNose.TestDiscovery.docstring import process_docstr, \
     parse_test_file, find_python_files, gather_doc_str
 from Utils.Logging import LogManager
 
-from multiprocessing import Queue, Process
+from multiprocessing import Queue, Process, cpu_count
 import os, pickle, sys, tempfile, time, traceback
 from glob import glob
 
@@ -32,53 +32,59 @@ class TestDiscoveryWorker(object):
         if not self.enabled:
             return []
 
-        fullPath = os.path.join(self.testRoot, self.testPath)
-        testFiles = find_python_files(fullPath)
-
         tests = []
-        queue = Queue()
-        processes, alive, left = [], 0, 1
+        output_Q, input_Q = Queue() ,Queue()
+        processes, alive, work_avail = [], 0, True
+        fullPath = os.path.join(self.testRoot, self.testPath)
 
-        while left > 0 or alive > 0 or not queue.empty():
-            left = len(testFiles)
+        for path in find_python_files(fullPath):
+            input_Q.put(path, block = False)
+
+        while work_avail or alive > 0 or not output_Q.empty():
+            work_avail = not input_Q.empty()
             alive = [p.is_alive() for p in processes].count(True)
 
-            if alive == 10 or left == 0:
-                while not queue.empty():
-                    tests.append(queue.get())
+            if alive == cpu_count() or not work_avail:
+                while not output_Q.empty():
+                    tests.append(output_Q.get())
                 time.sleep(0.1)
                 continue
 
             process = Process(target = self.__processTest,
-                args=(self.testRoot, testFiles.pop(), queue))
+                args=(self.testRoot, output_Q, input_Q))
             process.daemon = True
             process.start()
             processes.append(process)
 
-        queue.close()
+        input_Q.close()
+        output_Q.close()
         return tests
 
-    def __processTest(self, test_root, file_path, queue):
+    def __processTest(self, test_root, output_Q, input_Q):
         ''' Convert a given file location into test objects '''
         os.chdir(test_root)
         if test_root not in sys.path:
             sys.path.insert(0, test_root)
 
-        test_methods = parse_test_file(test_root, file_path)
-        for cls, method in test_methods:
-            raw_doc = gather_doc_str(cls, method)
-            doc_dict = process_docstr(raw_doc)
+        while not input_Q.empty():
+            file_path = input_Q.get(timeout = 0.5)
+            test_methods = parse_test_file(test_root, file_path)
 
-            try:
-                newTest = self.__createTestCase(
-                    cls, method, file_path, raw_doc,
-                    doc_dict, self.iterations)
-                if newTest: queue.put(newTest)
-            except:
-                self.logger.warn("Cannot create object from %s, \n%s\n%s\n\n"
-                    %(file_path, doc_dict, traceback.format_exc()))
+            for cls, method in test_methods:
+                raw_doc = gather_doc_str(cls, method)
+                doc_dict = process_docstr(raw_doc)
 
-        queue.close()
+                try:
+                    newTest = self.__createTestCase(
+                        cls, method, file_path, raw_doc,
+                        doc_dict, self.iterations)
+                    if newTest: output_Q.put(newTest)
+                except:
+                    self.logger.warn("Cannot create object from %s, \n%s\n%s\n\n"
+                        %(file_path, doc_dict, traceback.format_exc()))
+
+        output_Q.close()
+        input_Q.close()
 
     def __createTestCase(self, cls, method, test_file, raw_doc, doc_dict, iterations):
         description = doc_dict.get('summary', '')
