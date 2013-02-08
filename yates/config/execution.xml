@@ -8,5 +8,5 @@
     <rebootNewBoxes>false</rebootNewBoxes>
     <manualInspection>false</manualInspection>
     <stopWhenAllDead>true</stopWhenAllDead>
-    <scripts enabled="true">/tmp/tools</scripts>
+    <scripts enabled="false">/tmp/tools</scripts>
 </execution>

@@ -15,7 +15,7 @@ ROOT = join(get_python_lib(), 'yates')
 
 setup(
     name='YATES',
-    version='0.1.0',
+    version='0.0.1',
     author='Mark Wallsgrove, Vladimirs Ambrosovs',
     author_email='mark.wallsgrove@gmail.com',
     packages=[
@@ -66,4 +66,5 @@ setup(
         "wsgiref==0.1.2",
         "zope.interface==4.0.3",
     ],
+    scripts = ['ycmd'],
 )
