@@ -41,13 +41,13 @@ class TestDiscoveryWorker(object):
             input_Q.put(path, block = False)
 
         while work_avail or alive > 0 or not output_Q.empty():
+            time.sleep(0.1)
+
             work_avail = not input_Q.empty()
             alive = [p.is_alive() for p in processes].count(True)
-
             if alive == cpu_count() or not work_avail:
                 while not output_Q.empty():
                     tests.append(output_Q.get())
-                time.sleep(0.1)
                 continue
 
             process = Process(target = self.__processTest,
