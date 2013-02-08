@@ -7,6 +7,7 @@ from Network.SSH import SSHClient
 from RecoveryWorker import RecoveryWorker
 from Results.ResultStatus import ResultDefiner
 from Results.PeerStatus import ReactionDefiner
+from events import get_event_handler
 
 import tempfile, urllib2, os, time
 from subprocess import Popen
@@ -22,6 +23,13 @@ class Peer(object):
     REBOOT_STATES = [PeerState.REBOOTING(), PeerState.DEAD()]
     LOCKED_STATES = [PeerState.LOCKED(), PeerState.PENDING()]
     REQUIRED_CONF = ['user', 'password', 'tmpdir', 'envserver', 'envserverport', 'rebootcmd']
+    
+    IGNORED_PEER_EVENT = get_event_handler('ignored_peer')
+    NEW_PEER_EVENT = get_event_handler('new_peer')
+    PEER_STATE_CHANGE_EVENT = get_event_handler('peer_state_change')
+    PEER_STAGE_CHANGE_EVENT= get_event_handler('peer_stage_change')
+    TEST_RESULT_EVENT = get_event_handler('test_result')
+    PEER_SLEEPING_EVENT = get_event_handler('peer_sleeping')
 
     @staticmethod
     def createPeer(ipAddr, port, macAddr, randomBits, testDistributor, resultWorker):
@@ -32,8 +40,8 @@ class Peer(object):
             if route.macAddr.PCDATA != macAddr: continue
             if route.enabled == 'false': continue
             return Peer(ipAddr, port, macAddr, randomBits, testDistributor, resultWorker)
-        return None
-
+        Peer.IGNORED_PEER_EVENT(ipAddr, port, macAddr, randomBits)
+ 
     def __init__(self, ipAddr, port, macAddr, randomBits, testDistributor, resultWorker):
         self.STAGES = [
             self.__retrieveConfigFile,
@@ -101,6 +109,8 @@ class Peer(object):
         self.processResults = []
         self.longRunningProcesses = []
 
+        Peer.NEW_PEER_EVENT(self)
+
     def __retrieveConfigFile(self):
         """ Retrieve the configuration file from the peer """
         if not os.path.exists(self.peerDir):
@@ -141,7 +151,7 @@ class Peer(object):
 
         self.longRunningProcesses.append(SSHClient(self.config['user'],
             self.config['password'], self.ipAddr, cmd))
-       
+
     def __checkForLockedBox(self):
         """ Check for a locked box """
         output = self.processResults[0].updateOutput().strip()
@@ -237,7 +247,8 @@ class Peer(object):
         testState, errorMsg = self.processResults[0].getResult()
         self.currentTest.state = testState
         self.currentTest.error = errorMsg
-        self.resultWorker.report(self.currentTest, self.lastResultFiles, self)
+        Peer.TEST_RESULT_EVENT(self.currentTest, self.lastResultFiles, self)
+        #TODO: replace me, self.resultWorker.report(self.currentTest, self.lastResultFiles, self)
 
         self.longRunningProcesses.append(
             ReactionDefiner(self.lastResultFiles, self.currentTest))
@@ -252,6 +263,7 @@ class Peer(object):
     def __gracePeriod(self):
         """ Allow for a grace period """
         if self.gracePeriod == 0: return False
+        Peer.PEER_SLEEPING_EVENT(self)
         self.longRunningProcesses.append(Popen(
             'sleep %d' % self.gracePeriod, shell = True))
         self.gracePeriod = 0
@@ -272,7 +284,7 @@ class Peer(object):
             return
 
         self.state = state
-        self.resultWorker.reportState(self, comment)
+        Peer.PEER_STATE_CHANGE_EVENT(self, comment)
 
     def __hasDied(self, heartBeatFelt):
         """
@@ -364,7 +376,8 @@ class Peer(object):
     def __incStage(self):
         """ Increment the current stage """
         if self.state == PeerState.ACTIVE(): return
-        self.stage = (self.stage + 1) * (self.stage + 1 < self.STAG_LEN)        
+        self.stage = (self.stage + 1) * (self.stage + 1 < self.STAG_LEN)
+        Peer.PEER_STAGE_CHANGE_EVENT(self)
 
     def __getExitCode(self, process):
         """

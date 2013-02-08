@@ -31,7 +31,6 @@ class LogFileLogger(object):
            
         self.logFile = open(logFileLoc, mode, 0)
         self._log_message("TAS Version: %s\n" % os.environ['TAS_VERSION'])
-        self._log_message("Current Time: %s\n" % datetime.datetime.now())
         self._log_message("Execution Description: %s\n" % ",".join(description))
         self._log_message("Selected Tests:\n")
 
@@ -45,19 +44,17 @@ class LogFileLogger(object):
 
     def logPeerState(self, peer, comment = None):
         """ Log a peer state change """
-        now = datetime.datetime.now()
         comment = '' if not comment else ', %s' % comment
-        self._log_message("%s: Peer %s (%s) has changed state to %s%s\n"
-            %(now, peer.ipAddr, peer.macAddr, peer.state, comment))
+        self._log_message("Peer %s (%s) has changed state to %s%s\n"
+            %(peer.ipAddr, peer.macAddr, peer.state, comment))
 
     def logResult(self, test, files):
         """ When a test result has been processed update the database """
-        now = datetime.datetime.now()
         if test.peer:
-            self._log_message("%s: Peer %s (%s) has completed test %s, result %s\n"
-                %(now, test.peer.ipAddr, test.peer.macAddr, test.testId, test.state))
+            self._log_message("Peer %s (%s) has completed test %s, result %s\n"
+                %(test.peer.ipAddr, test.peer.macAddr, test.testId, test.state))
         else:
-            self._log_message('Test %s has been completed, result %s\n' %(now, test.testId))
+            self._log_message('Test %s has been completed, result %s\n' %(test.testId, test.status))
 
         self.total_tests += 1
         if test.state == TestStateValues.PASS():
@@ -90,6 +87,7 @@ class LogFileLogger(object):
         self._log_message('Executing iteration %d\n' % iteration)
 
     def _log_message(self, msg):
+        msg = '%s: %s' % (datetime.datetime.now(), msg)
         self.logFile.write(msg)
         for log in self.other_logs:
             log.write(msg)
@@ -102,6 +100,5 @@ class LogFileLogger(object):
         taken = ('%d day(s), %d hour(s), %d minute(s) and %d second(s)' 
             %(d.day-1, d.hour, d.minute, d.second))
     
-        self._log_message('Execution finished at %s, taking %s\n'
-            %(datetime.datetime.now(), taken))
+        self._log_message('Execution finished, taking %s\n' % taken)
         self.logFile.close()

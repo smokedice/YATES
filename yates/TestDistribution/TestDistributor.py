@@ -2,11 +2,13 @@ from Domain.States import TestState
 from Utils.Configuration import ConfigurationManager
 from Utils.Logging import LogManager
 from Utils import Network
+from events import get_event_handler
 
 import re, copy, tempfile, traceback
 
 class TestDistributor(object):
     DISTR_CFG = 'execution'
+    ITERATION_EVENT = get_event_handler('iteration_change')
 
     def __init__(self, peers, source):
         self.logger = LogManager().getLogger(self.__class__.__name__)
@@ -33,6 +35,7 @@ class TestDistributor(object):
         if self.currentIteration > 0: self.currentIteration += 1
         if 0 < self.iterations < self.currentIteration: return False
         self.testDistributor = self.__getDistributor()
+        TestDistributor.ITERATION_EVENT(self.currentIteration)
         return True
         
     def __getDistributor(self):

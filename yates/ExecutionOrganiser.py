@@ -48,7 +48,6 @@ class ExecutionOrganiser(object):
         if all(self.__processPeers(heartBeats)):
             toContinue = self.testDistributor.continueIterations()
             if not toContinue: return True
-            self.resultWorker.reportIteration(self.testDistributor.currentIteration)
             self.peers = {}
             return False
         return False
