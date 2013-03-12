@@ -1,70 +1,47 @@
-from Utils.Logging import LogManager
-
-import socket, traceback, os
 from multiprocessing import Process
+import yates.Utils.envclient
 
-class EnvCat(Process):
-    def __init__(self, host, port, dest, cmd):
-        """ 
-        Save the envlog to a given destination
-        @param host: IP address where the env server exists
-        @param port: Env server tcp port
-        @param dest: Full path of where the env log should be written to
-        """
-        Process.__init__(self, name = 'EnvCatLog')
+UNSPECIFIED = yates.Utils.envclient.UNSPECIFIED
 
-        path, filename = os.path.split(os.path.abspath(dest))
-        if not os.path.exists(path):
-            os.makedirs(path)
 
-        self.dest = dest
-        self.host = host
-        self.port = port
-        self.cmd = cmd
-        self.start()
+def capabilities(host, port):
+    """ Retrieve the envservers capabilities """
+    client = yates.Utils.envclient.Client(host, port)
+    return client.status.capabilities()
 
-    def run(self):
-        if self.host == '' or self.port == '':
-            return
 
-        with open(self.dest, 'w') as log:
-            content = envcatRequest(self.host, self.port, self.cmd)
-            log.write(content)
+def latest_id(host, port):
+    """ Retrieve the latest log ID on the envserver """
+    client = yates.Utils.envclient.Client(host, port)
+    return client.status.latest_id()
 
-def envcatRequest(hostname, port, content):
-    '''
-    Method retreives data from the evserver
-    @param hostname: IP address of the envserver
-    @param port: port of the envserver
-    @param content: the content keyword required to be retreived
-    @return: the retrieved content, or empty string in case of error
-    '''
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ret = ''
 
-    if not hostname or not port:
-        return ret
+def stop_all(host, port):
+    """ Stop all services on the envserver """
+    client = yates.Utils.envclient.Client(host, port)
+    return _create_process(client.status.stopall)
 
-    try:
-        s.settimeout(3)
-        s.connect((hostname, port))
-        s.settimeout(None)
-        s.sendall(content)
-        s.shutdown(socket.SHUT_WR)
 
-        while 1:
-            data = s.recv(1024)
-            if data == "": break
-            ret = data
-        s.close()
-    except:
-        #If the exception will be raised duting the retrieval of the
-        #data, we just put log message, and return empty string,
-        #as failure in the retrieval may indicate, that the configuration
-        #of the envserver exist, but the server is not running
-        exc = traceback.format_exc().splitlines()
-        LogManager().getLogger('EnvCat').warning(
-            "Failed retrieve %s from server %s:%s: %s" % (content, hostname,
-            port, exc[-1]))
+def store_log(host, port, file_loc, since=UNSPECIFIED):
+    """ Store the envserver log to a given file """
+    def _store_log(host, port, file_loc, since):
+        client = yates.Utils.envclient.Client(host, port)
+        with open(file_loc, 'w') as f:
+            lines = client.status.get_logs(since)
+            f.write('\n'.join([
+                ' '.join(str(i) for i in x[1:])
+                for x in lines
+            ]))
 
-    return ret
+    return _create_process(_store_log, host, port,
+                           file_loc, since)
+
+
+def _create_process(target, *args):
+    """ create process for background processing """
+    name = target.__name__
+    process = Process(
+        name='envcat-%s' % name,
+        target=target, args=args)
+    process.start()
+    return process
