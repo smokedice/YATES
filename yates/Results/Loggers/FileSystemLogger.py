@@ -1,4 +1,4 @@
-from Utils.Configuration import ConfigurationManager
+from yates.Utils.Configuration import ConfigurationManager
 from gnosis.xml.objectify._objectify import _XO_
 
 import os

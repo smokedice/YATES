@@ -1,4 +1,5 @@
-from Results.Model.ModelUtils import ResultBaseModel
+from yates.Results.Model.ModelUtils import ResultBaseModel
+
 from peewee import PrimaryKeyField, CharField
 
 class Peer(ResultBaseModel):

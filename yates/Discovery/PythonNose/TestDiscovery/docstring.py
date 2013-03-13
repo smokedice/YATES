@@ -1,18 +1,18 @@
 import sys, os, traceback, StringIO, time, tempfile, pickle, glob, re, types
-from Utils.Logging import LogManager
+from yates.Utils.Logging import LogManager
 
 
 def find_python_files(location, filePattern = '^(t|T)est.*\.py$'):
     ''' Find all Python files from a given location '''
     location = os.path.abspath(location)
     pattern = re.compile(filePattern)
-    python_files = []  
+    python_files = []
 
     for path, dirs, files in os.walk(location):
-        if '/.' in path: continue 
+        if '/.' in path: continue
 
         for fle in files:
-            if not pattern.match(fle): continue 
+            if not pattern.match(fle): continue
             python_files.append(os.path.join(path, fle))
 
     return python_files
@@ -80,16 +80,16 @@ def find_test_methods(module):
 
 def process_docstr(doc):
     ''' Convert a docstring into key->value pairs '''
-    docstrings = {} 
+    docstrings = {}
 
     for line in doc.splitlines():
         value = str(line.strip().decode('utf-8', errors = "ignore"))
 
         if len(value) == 0: continue
-        elif value[0] == '@' and value.find(':') >= 2: 
+        elif value[0] == '@' and value.find(':') >= 2:
             k, v = value.split(':', 1)
             key, value = k[1:].strip(), v.strip()
-        else: 
+        else:
             key = 'summary'
 
         if key in docstrings.keys():

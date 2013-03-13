@@ -1,5 +1,7 @@
-from multiprocessing import Process
 import yates.Utils.envclient
+
+from multiprocessing import Process
+
 
 UNSPECIFIED = yates.Utils.envclient.UNSPECIFIED
 

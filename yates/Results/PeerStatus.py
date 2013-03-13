@@ -1,7 +1,11 @@
-from Utils.Configuration import ConfigurationManager
-from Domain.States import PeerState
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Domain.States import PeerState
+
 from multiprocessing import Process, Queue
-import re, os, mmap
+import re
+import os
+import mmap
+
 
 class ReactionDefiner(Process):
     """ Find a reaction to match the provided content """
@@ -11,8 +15,8 @@ class ReactionDefiner(Process):
         self.test = test
         self.queue = Queue()
         self.config = ConfigurationManager().getConfiguration('reactions').configuration
- 
-        Process.__init__(self, target = self.__defineResult, name = "ReactionDefiner")
+
+        Process.__init__(self, target=self.__defineResult, name="ReactionDefiner")
         self.start()
 
     def __defineResult(self):
@@ -21,10 +25,12 @@ class ReactionDefiner(Process):
         reactions = getattr(self.config, 'reaction', [])
         reactions = reactions if isinstance(reactions, list) else [reactions]
 
-        try: self.__findReaction(contents, reactions) 
-        finally: self.closeFileMaps(contents)
+        try:
+            self.__findReaction(contents, reactions)
+        finally:
+            self.closeFileMaps(contents)
 
-    def __findReaction(self, contents, reactions):     
+    def __findReaction(self, contents, reactions):
         """ Match a reaction to a set of content """
         for reaction in reactions:
             if reaction.related not in contents.keys():
@@ -39,7 +45,7 @@ class ReactionDefiner(Process):
             gracePeriod = int(reaction.effect.graceperiod.PCDATA) \
                 if hasattr(reaction.effect, 'graceperiod') else 0
             return self.queue.put((peerState, gracePeriod))
-            
+
         return self.queue.put((None, 0))
 
     def createFileMaps(self, fileLocs):
@@ -51,7 +57,8 @@ class ReactionDefiner(Process):
             name = fullName.split('.')[0].lower()
             fileHandler = open(fileLoc, 'r')
             fileSize = os.path.getsize(fileLoc)
-            if fileSize == 0: continue
+            if fileSize == 0:
+                continue
             fileMap = mmap.mmap(fileHandler.fileno(), fileSize, access=mmap.ACCESS_READ)
             contents[name] = (fileHandler, fileMap)
         return contents

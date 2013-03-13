@@ -1,5 +1,5 @@
-from Utils.Configuration import ConfigurationManager
-from Utils.Network import getIPAddressByInterface
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Utils.Network import getIPAddressByInterface
 
 from multiprocessing.process import Process
 from multiprocessing.queues import Queue
@@ -52,7 +52,7 @@ class UDPServer(Process):
         self.reactor = reactor
         reactor.callLater(1, self.__checkShutdown)
         log.defaultObserver.stop()
-        reactor.run()                                      
+        reactor.run()
 
     def getHeartBeats(self, count = 2):
         """

@@ -1,13 +1,13 @@
-from Domain.States import PeerState, TestState
-from Utils.Logging import LogManager
-from Utils.Network import getIPAddressByInterface, syncGetHTTPFile
-import Utils.Envcat
-from Utils.Configuration import ConfigurationManager
-from Network.SSH import SSHClient
-from RecoveryWorker import RecoveryWorker
-from Results.ResultStatus import ResultDefiner
-from Results.PeerStatus import ReactionDefiner
-from events import get_event_handler
+from yates.Domain.States import PeerState, TestState
+from yates.Utils.Logging import LogManager
+from yates.Utils.Network import getIPAddressByInterface, syncGetHTTPFile
+import yates.Utils.Envcat
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Network.SSH import SSHClient
+from yates.RecoveryWorker import RecoveryWorker
+from yates.Results.ResultStatus import ResultDefiner
+from yates.Results.PeerStatus import ReactionDefiner
+from yates.events import get_event_handler
 
 import os
 import time
@@ -140,10 +140,10 @@ class Peer(object):
         if self.config['rebootcmd'] == '':
             self.postReboot = self.initReboot = False
 
-        self.capabilities = Utils.EnvCat.capabilities(
+        self.capabilities = yates.Utils.Envcat.capabilities(
             self.envServer, self.envServerPort)
 
-        self.log_index = Utils.EnvCat.latest_id(
+        self.log_index = yates.Utils.Envcat.latest_id(
             self.envServer, self.envServerPort)
 
         if self.__configIsMissingKeys():
@@ -238,7 +238,7 @@ class Peer(object):
         self.longRunningProcesses.append(syncGetHTTPFile(
             '%slogs.tar.gz' % self.httpLoc, self.lastResultLoc, True))
 
-        self.longRunningProcesses.append(Utils.EnvCat.store_log(
+        self.longRunningProcesses.append(yates.Utils.Envcat.store_log(
             self.envServer, self.envServerPort,
             '%s/envlog.txt' % self.lastResultLoc, self.log_index))
 
@@ -494,7 +494,7 @@ class Peer(object):
             self.resultWorker.report(self.currentTest, [], self)
             self.currentTest = None
 
-        processes = [Utils.EnvCat.stop_all(self.envServer, self.envServerPort)]
+        processes = [yates.Utils.Envcat.stop_all(self.envServer, self.envServerPort)]
 
         if self.state not in Peer.LOCKED_STATES:
             processes.append(self.__unlockBox())

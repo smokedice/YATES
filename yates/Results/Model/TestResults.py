@@ -1,11 +1,12 @@
-from Results.Model.ModelUtils import ResultBaseModel
-from Results.Model.Peer import Peer
-from Results.Model.TestStates import TestStates
-from TestDetails import TestDetails
-from TestExecutionDetails import TestExecutionDetails
+from yates.Results.Model.ModelUtils import ResultBaseModel
+from yates.Results.Model.Peer import Peer
+from yates.Results.Model.TestStates import TestStates
+from yates.Results.Model.TestDetails import TestDetails
+from yates.Results.Model.TestExecutionDetails import TestExecutionDetails
+from yates.Results.Model.ModelUtils import DateTimeField
+
 from peewee import PrimaryKeyField, ForeignKeyField, BooleanField, \
     TextField, IntegerField
-from ModelUtils import DateTimeField
 
 class TestResults(ResultBaseModel):
     resultId = PrimaryKeyField(db_column = 'resultId')

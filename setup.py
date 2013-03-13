@@ -1,7 +1,8 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 from distutils.sysconfig import get_python_lib
 from os.path import join
-import glob, os
+import glob
+import os
 
 CONFIG_DIR = join(os.path.dirname(__file__), "yates", "config")
 CONFIG_FILES = glob.glob(join(CONFIG_DIR, "*.xml"))
@@ -18,26 +19,7 @@ setup(
     version='0.0.1',
     author='Mark Wallsgrove, Vladimirs Ambrosovs',
     author_email='mark.wallsgrove@gmail.com',
-    packages=[
-        'yates',
-        'yates.Filters',
-        'yates.Discovery',
-        'yates.Discovery.STBTester',
-        'yates.Discovery.PythonNose',
-        'yates.Discovery.PythonNose.DBReader',
-        'yates.Discovery.PythonNose.DBReader.Model',
-        'yates.Discovery.PythonNose.TestDiscovery',
-        'yates.TestEnvironment',
-        'yates.TestGather',
-        'yates.Test',
-        'yates.Network',
-        'yates.Utils',
-        'yates.Domain',
-        'yates.TestDistribution',
-        'yates.Results',
-        'yates.Results.Model',
-        'yates.Results.Loggers'
-    ],
+    packages=find_packages(),
     url='http://github.com/smokedice/YATES',
     license='',
     description='Yet Another Test Execution System',
@@ -47,16 +29,11 @@ setup(
         (join(ROOT, 'Docs'), DOCS_FILES),
         (join(ROOT, 'Docs/config'), DOCS_CONF_FILES),
     ],
-    package_data={
-        'yates.Discovery.STBTester' : ['STBTesterScript'],
-        'yates.Discovery.PythonNose' : ['PythonNoseScript'],
-    },
     #long_description=open('README.rst').read(),
     install_requires=[
-        "Gnosis==0.1.0",
+        "Gnosis==0.1.1",
         "Twisted==12.3.0",
         "argparse==1.2.1",
-        "distribute==0.6.24",
         "mechanize==0.2.5",
         "minixsv==0.9.0",
         "peewee==1.0.0",
@@ -66,5 +43,6 @@ setup(
         "wsgiref==0.1.2",
         "zope.interface==4.0.3",
     ],
-    scripts = ['ycmd'],
+    scripts=['yates/ycmd'],
+    include_package_data=True,
 )

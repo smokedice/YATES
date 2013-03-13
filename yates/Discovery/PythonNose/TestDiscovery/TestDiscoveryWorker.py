@@ -1,7 +1,7 @@
-from Discovery.PythonNose.PythonNoseTest import PythonNoseTest
-from Discovery.PythonNose.TestDiscovery.docstring import process_docstr, \
+from yates.Discovery.PythonNose.PythonNoseTest import PythonNoseTest
+from yates.Discovery.PythonNose.TestDiscovery.docstring import process_docstr, \
     parse_test_file, find_python_files, gather_doc_str
-from Utils.Logging import LogManager
+from yates.Utils.Logging import LogManager
 
 from multiprocessing import Queue, Process, cpu_count
 import os

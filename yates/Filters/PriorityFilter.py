@@ -1,6 +1,7 @@
-from Test.Group import Group
+from yates.Test.Group import Group
+from yates.Utils.Configuration import ConfigurationManager
+
 from StringIO import StringIO
-from Utils.Configuration import ConfigurationManager
 import re
 
 class PriorityFilter(object):
@@ -36,7 +37,7 @@ class PriorityFilter(object):
         to specified values. If the values are not specified, then the
         method performs sorting of the existing groups
         @param source: the source object
-        @return the modified source object with applied priority 
+        @return the modified source object with applied priority
         '''
         if not self.enabled:
             return source

@@ -1,5 +1,6 @@
+from yates.Utils.Configuration import ConfigurationManager
+
 from StringIO import StringIO
-from Utils.Configuration import ConfigurationManager
 from sets import Set
 import os
 import re

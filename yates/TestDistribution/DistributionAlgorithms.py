@@ -1,5 +1,5 @@
-from Utils.Configuration import ConfigurationManager
-from Utils.Logging import LogManager
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Utils.Logging import LogManager
 
 from StringIO import StringIO
 from itertools import permutations, izip
@@ -102,7 +102,7 @@ class AbstractDistributor(object):
         raise NotImplementedError()
 
 class SingleExecution(AbstractDistributor):
-    def useTest(self, peer, peers, source, group, test, alterSource): 
+    def useTest(self, peer, peers, source, group, test, alterSource):
         """ Execute one test on one box """
         if not self.isSuitable(peer.capabilities, test.environment):
             return False
@@ -157,7 +157,7 @@ class ExecutionOnEachBox(AbstractDistributor):
     def executed(self, peers, test):
         for peer in peers.values():
             if peer.macAddr not in self.execMap.keys():
-                return False    
+                return False
             elif test not in self.execMap[peer.macAddr]:
                 return False
         return True
@@ -219,7 +219,7 @@ class ExecutionOnEachBoxEvenly(ExecutionOnEachBox):
         @param souce: the source object with groups of tests
         @return: found test and modified source
         '''
-        for testDetails in self.tests: 
+        for testDetails in self.tests:
             test = testDetails[1]
             group = testDetails[2]
 
@@ -228,12 +228,12 @@ class ExecutionOnEachBoxEvenly(ExecutionOnEachBox):
                 return copy.deepcopy(test)
 
         return None
-    
+
     def executed(self, peers, test):
         if len(peers.keys()) == 0: return False
         for peer in peers.values():
             if peer.macAddr not in self.execMap.keys():
-                return False    
+                return False
             elif test not in self.execMap[peer.macAddr]:
                 return False
         return True

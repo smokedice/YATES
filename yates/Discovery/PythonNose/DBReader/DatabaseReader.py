@@ -1,7 +1,7 @@
-from Discovery.PythonNose.PythonNoseTest import PythonNoseTest
-from Results.Model import ModelUtils
-from Discovery.PythonNose.DBReader.Model.Tests import Tests
-from Utils.Configuration import ConfigurationManager
+from yates.Discovery.PythonNose.PythonNoseTest import PythonNoseTest
+from yates.Results.Model import ModelUtils
+from yates.Discovery.PythonNose.DBReader.Model.Tests import Tests
+from yates.Utils.Configuration import ConfigurationManager
 import os
 
 class SAPIDatabaseReader(object):

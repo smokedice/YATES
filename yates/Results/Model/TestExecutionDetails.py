@@ -1,5 +1,6 @@
-from Results.Model.ModelUtils import ResultBaseModel
-from ModelUtils import DateTimeField
+from yates.Results.Model.ModelUtils import ResultBaseModel
+from yates.Results.Model.ModelUtils import DateTimeField
+
 from peewee import PrimaryKeyField, TextField, CharField, IntegerField
 
 class TestExecutionDetails(ResultBaseModel):

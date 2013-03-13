@@ -1,4 +1,4 @@
-from Utils.Configuration import ConfigurationManager
+from yates.Utils.Configuration import ConfigurationManager
 from gnosis.xml.objectify._objectify import _XO_
 import sys, argparse
 
@@ -75,7 +75,7 @@ class ArgumentParser(object):
 
     def __processOverride(self, root, path, value):
         element_name = path.pop(0)
-        new_root = getattr(root, element_name, None) 
+        new_root = getattr(root, element_name, None)
 
         if not new_root:
             raise Exception("Invalid configuration")

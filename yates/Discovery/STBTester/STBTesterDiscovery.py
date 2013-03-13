@@ -1,4 +1,4 @@
-from Discovery.STBTester.STBTesterTest import STBTesterTest
+from yates.Discovery.STBTester.STBTesterTest import STBTesterTest
 import os
 
 class STBTesterDiscovery(object):

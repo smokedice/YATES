@@ -1,4 +1,5 @@
-from Domain.States import TestState
+from yates.Domain.States import TestState
+
 from StringIO import StringIO
 from gnosis.xml.objectify._objectify import make_instance
 from multiprocessing import Queue, Process
@@ -40,7 +41,7 @@ class ResultDefiner(Process):
     def __defineResult(self):
         """
         Define a result based on the log files. This process will return
-        the error type and a text blob that explains the error. 
+        the error type and a text blob that explains the error.
         @param fileLocations: Dictionary containing locations of the log files. \
         Key value relationship should be file name to file location. The keys should
         follow the same naming scheme that is defined with the Test object
@@ -56,7 +57,7 @@ class ResultDefiner(Process):
             name = fullName.split('.')[0].lower()
             files[name] = fileLoc
 
-        if 'xunit' not in files.keys(): 
+        if 'xunit' not in files.keys():
             return self.queue.put((TestState.NO_XML(), 'No XUnit file provided!'))
 
         try:
@@ -87,9 +88,9 @@ class ResultDefiner(Process):
         errorMsgBuffer.close()
 
         # Module SetUp/TearDown
-        if testcases[0].name.endswith('>:setup'):         
+        if testcases[0].name.endswith('>:setup'):
             return self.queue.put((TestState.MODULE_INST(), errorMsg))
-        elif tests == 2 and errors == 1:                  
+        elif tests == 2 and errors == 1:
             return self.queue.put((TestState.MODULE_TEARDOWN(), errorMsg))
 
         for regex, testState in regexChecks:

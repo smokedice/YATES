@@ -1,14 +1,22 @@
-from Test.Group import Group
-from Test.Source import Source
-from Filters.PriorityFilter import PriorityFilter
-from Filters.TestPackFilter import TestPackFilter
-from Filters.TestFilter import TestFilter
-from Utils import Network
-from Utils.Configuration import ConfigurationManager
+from yates.Test.Group import Group
+from yates.Test.Source import Source
+from yates.Filters.PriorityFilter import PriorityFilter
+from yates.Filters.TestPackFilter import TestPackFilter
+from yates.Filters.TestFilter import TestFilter
+from yates.Utils import Network
+from yates.Utils.Configuration import ConfigurationManager
 
 from StringIO import StringIO
 from datetime import datetime
-import os, time, traceback, tarfile
+import os
+import time
+import tarfile
+
+import yates
+YPATH = os.path.abspath(os.path.split(
+    yates.__file__)[0])
+IPATH = os.path.sep.join(YPATH.split(os.path.sep)[:-1])
+
 
 class TestGatherManager(object):
     DEFAULT_GROUP_NAME = 'DefaultGroup'
@@ -18,31 +26,36 @@ class TestGatherManager(object):
 
     def __init__(self, tmpDir):
         self.tmpDir = tmpDir
-        self.__testFilters = [ TestPackFilter(), TestFilter(), PriorityFilter() ]
-        self.__testCreators = [ ]
+        self.__testFilters = [TestPackFilter(), TestFilter(), PriorityFilter()]
+        self.__testCreators = []
 
         items = ConfigurationManager().getConfiguration('discovery').configuration
-        configs = [ c for c in dir(items) if hasattr(getattr(items, c), 'enabled') ]
+        configs = [c for c in dir(items) if hasattr(getattr(items, c), 'enabled')]
 
         execution = ConfigurationManager().getConfiguration('execution').configuration
         defaultTestTimeout = int(execution.defaultTimeout.PCDATA)
         iterations = int(execution.iterations.PCDATA)
 
         for name in configs:
-            path = "Discovery/%s" % name
+            path = os.path.join('yates', 'Discovery', name)
             config = getattr(items, name)
-            if config.enabled == 'false': continue
-            if not os.path.exists(path): raise Exception('Cannot find %s' % path)
-            self.__testCreators.append(self.__loadTestCreator(path, config, defaultTestTimeout, iterations)) 
-          
+
+            if config.enabled == 'false':
+                continue
+
+            self.__testCreators.append(self.__loadTestCreator(
+                path, config, defaultTestTimeout, iterations))
+
     def __loadTestCreator(self, path, config, defaultTestTimeout, iterations):
         """ Load test creator from a given path """
         name = os.path.basename(path)
         modulePath = path.replace('/', '.')
         clsName = modName = '%sDiscovery' % name
+        full_path = os.path.join(IPATH, path)
 
-        mod = __import__(modulePath, fromlist = [ clsName ])
-        return getattr(getattr(mod, modName), clsName)(config, path, defaultTestTimeout, iterations)
+        mod = __import__(modulePath, fromlist=[clsName])
+        return getattr(getattr(mod, modName), clsName)(
+            config, full_path, defaultTestTimeout, iterations)
 
     def gatherTests(self):
         """ Discover all tests from all sources """
@@ -68,13 +81,16 @@ class TestGatherManager(object):
 
         testIds = []
         for test in tests:
-            if test.testId not in testIds: continue
+            if test.testId not in testIds:
+                continue
             raise Exception('Duplicate test ID %s' % test.testId)
-        if len(tests) == 0: raise Exception('No tests found!')
+
+        if len(tests) == 0:
+            raise Exception('No tests found!')
         del testIds
 
         defGroup = Group(self.DEFAULT_GROUP_NAME,
-            self.DEFAULT_GROUP_DESC, tests)
+                         self.DEFAULT_GROUP_DESC, tests)
         source = Source(self.DEFAULT_LOCATION, defGroup)
 
         descBuffer = StringIO()
@@ -83,14 +99,19 @@ class TestGatherManager(object):
             descBuffer.write(testFilter.getAppliedFilterDescription())
         desc = descBuffer.getvalue()
         descBuffer.close()
- 
-        testSuiteName = "FIXME" # TODO: where does this come from?
+
+        # TODO: where does this come from?
+        testSuiteName = "FIXME"
         dateTime = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%dT%H:%M:%S')
         macAddress = Network.getMacAddress()
         executionName = "%s_%s_%s" % (testSuiteName, dateTime, macAddress)
-   
-        self.__packDetails = (testSuiteName, str(desc),
-            self.__getShortFilterDesc(), executionName, dateTime)
+
+        self.__packDetails = (
+            testSuiteName,
+            str(desc),
+            self.__getShortFilterDesc(),
+            executionName,
+            dateTime)
 
         self.__makeTar(**content)
         return source, desc
@@ -99,7 +120,7 @@ class TestGatherManager(object):
         return self.__packDetails
 
     def __makeTar(self, **paths):
-        tarName = os.path.join(self.tmpDir,self.TAR_NAME)
+        tarName = os.path.join(self.tmpDir, self.TAR_NAME)
         tar = tarfile.open(tarName, 'w:gz')
 
         for name, path in paths.items():
@@ -109,14 +130,19 @@ class TestGatherManager(object):
         return tar.name
 
     def __getShortFilterDesc(self):
-        filters = [ tFilter.isEnabled() for tFilter in self.__testFilters ]
+        filters = [tFilter.isEnabled() for tFilter in self.__testFilters]
         testPackFiltered = filters[0]
         otherFilters = any(filters[1:])
 
         if not testPackFiltered and not otherFilters:
-            return 'all' # No filters
+            # No filters
+            return 'all'
         elif not testPackFiltered and otherFilters:
-            return 'filtered' # Some filters, but no testpacks
+            # Some filters, but no testpacks
+            return 'filtered'
         elif testPackFiltered and not otherFilters:
-            return 'testpack' # Just a testpack filter
-        return 'testpack_filtered' # Testpack and filters
+            # Just a testpack filter
+            return 'testpack'
+
+        # Testpack and filters
+        return 'testpack_filtered'

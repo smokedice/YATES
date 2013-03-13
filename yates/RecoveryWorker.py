@@ -1,6 +1,6 @@
 from multiprocessing import Process
-from Network.SSH import SSHClient, Status
-from Utils.Logging import LogManager
+from yates.Network.SSH import SSHClient, Status
+from yates.Utils.Logging import LogManager
 import sys, time
 
 class RecoveryWorker(Process):
@@ -45,7 +45,7 @@ class RecoveryWorker(Process):
             sys.exit(0)
             return
 
-        self.logger.warn('Cannot reboot peer using SSH (%s)' 
+        self.logger.warn('Cannot reboot peer using SSH (%s)'
             %(sshClient.exitcode))
 
     def __rebootPWR(self):
@@ -65,5 +65,5 @@ class RecoveryWorker(Process):
             sys.exit(0)
             return
 
-        self.logger.warn('Cannot reboot peer %s(%s) using the Power Controller (%d)' 
+        self.logger.warn('Cannot reboot peer %s(%s) using the Power Controller (%d)'
             %(self.peer.ipAddr, self.peer.macAddr, sshClient.exitcode))

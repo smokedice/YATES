@@ -1,19 +1,19 @@
-from Common.CommonSignals.Enums.ActivePeerState import ActivePeerState
-from Common.CommonSignals.ExpectReboot import ExpectReboot
-from Common.CommonSignals.LogFilesTransfered import LogFilesTransfered
-from Common.CommonSignals.FileServiceStateUpdate import FileServiceStateUpdate
-from Common.CommonSignals.Enums.FileServiceState import FileServiceState
-from Common.SignalExchangeHub.SignalExchangeHub import SignalExchangeHub
-from Common.TASUtils.Configuration.ConfigurationManager import ConfigurationManager
-from Common.TASUtils.LogManager import LogManager
+from yates.Common.CommonSignals.Enums.ActivePeerState import ActivePeerState
+from yates.Common.CommonSignals.ExpectReboot import ExpectReboot
+from yates.Common.CommonSignals.LogFilesTransfered import LogFilesTransfered
+from yates.Common.CommonSignals.FileServiceStateUpdate import FileServiceStateUpdate
+from yates.Common.CommonSignals.Enums.FileServiceState import FileServiceState
+from yates.Common.SignalExchangeHub.SignalExchangeHub import SignalExchangeHub
+from yates.Common.TASUtils.Configuration.ConfigurationManager import ConfigurationManager
+from yates.Common.TASUtils.LogManager import LogManager
 
-from Master.Domain.CheckPeerState import CheckPeerState
-from Master.Domain.PeerHeartBeat import PeerHeartBeat
-from Master.Domain.PeerReboot import PeerReboot
-from Master.Domain.PeerRecovery import PeerRecovery
-from Master.Domain.PeerTestState import PeerTestState
-from Master.Domain.TestCompleted import TestCompleted
-from Master.Domain.Test.TestStates import TestState
+from yates.Master.Domain.CheckPeerState import CheckPeerState
+from yates.Master.Domain.PeerHeartBeat import PeerHeartBeat
+from yates.Master.Domain.PeerReboot import PeerReboot
+from yates.Master.Domain.PeerRecovery import PeerRecovery
+from yates.Master.Domain.PeerTestState import PeerTestState
+from yates.Master.Domain.TestCompleted import TestCompleted
+from yates.Master.Domain.Test.TestStates import TestState
 
 import threading
 import time
@@ -25,7 +25,7 @@ import time
 class PeerState(object):
     HEART_BEAT_TIMEOUT = 300
     TESTSTATES = [TestState.DEADBOX(), TestState.SLAVE_CRASH()]
-    TEST_TIMEOUT_GRACE = 300 
+    TEST_TIMEOUT_GRACE = 300
 
     def __init__(self, peer, fServiceHost, fServicePort):
         self.logger = LogManager().getLogger(self.__class__.__name__)
@@ -136,7 +136,7 @@ class PeerState(object):
         if not self.testStarted and self.currentTest:
             print 'LATE started', self.testStarted, 'current id', self.currentTest.testId, \
                 'incoming id', testcase.testId, 'state', testcase.state
-            return 
+            return
 
         elif not self.testStarted and not self.currentTest:
             print 'LATE!! no current test,', testcase.testId, testcase.state
@@ -180,7 +180,7 @@ class PeerState(object):
 
         print ' **> LogFilesWaiter has stopped waiting, %d, %s, %s, %s, %s' \
             % (time.time() - self.stime, self.stime, self.logsReceived, time.time(), self.peer.ipAddress)
-   
+
         if self.logsReceived and self.REBOOT_PER_TEST:
             print ' **> Rebooting peer as test has completed, %s' % self.peer.ipAddress
             SignalExchangeHub().propagateSignal(PeerReboot(self.peer))
@@ -189,7 +189,7 @@ class PeerState(object):
             self.peer.setState(ActivePeerState.ACTIVE())
         elif self.logsReceived == False:
             print ' **> Didn\'t receive log files for %s' % self.peer.ipAddress
-            SignalExchangeHub().propagateSignal(PeerRecovery(self.peer)) 
+            SignalExchangeHub().propagateSignal(PeerRecovery(self.peer))
             logSig = LogFilesTransfered(self.peer.macAddress, testcase.testId, {}, testcase.iteration)
             logSig.removePeerNamespace()
             SignalExchangeHub().propagateSignal(logSig)
@@ -242,7 +242,7 @@ class PeerState(object):
     def __testTimeoutChecker(self, now):
         """
         Check to see if a test has timed out
-        @param now: Current Unix time (seconds) 
+        @param now: Current Unix time (seconds)
         """
         if not self.testStarted or self.testCompletionBefore > now:
             return True

@@ -1,10 +1,10 @@
-from Domain.States import TestState
-from Utils.Configuration import ConfigurationManager
-from Utils.Logging import LogManager
-from Utils import Network
-from events import get_event_handler
+from yates.Domain.States import TestState
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Utils.Logging import LogManager
+from yates.events import get_event_handler
 
-import re, copy, tempfile, traceback
+import copy
+
 
 class TestDistributor(object):
     DISTR_CFG = 'execution'
@@ -17,29 +17,39 @@ class TestDistributor(object):
         self.peers = peers
 
         # Check if there are any tests to distribute
-        groups = [ group for group in self.source.groups ]
-        testCount = sum([ len(group.tests) for group in groups ])
-        if testCount  ==  0: raise Exception("No tests to execute")
-            
+        groups = [group for group in self.source.groups]
+        testCount = sum([len(group.tests) for group in groups])
+
+        if testCount == 0:
+            raise Exception("No tests to execute")
+
         conf = ConfigurationManager().getConfiguration(self.DISTR_CFG).configuration
-        self.distributionModule = "TestDistribution.DistributionAlgorithms"
+        self.distributionModule = "yates.TestDistribution.DistributionAlgorithms"
         self.distributionAlgorithmCls = conf.distributionAlgorithm.PCDATA
         self.currentIteration = 1
 
-        try: self.iterations = int(conf.iterations.PCDATA)
-        except ValueError: self.iterations = 1
+        try:
+            self.iterations = int(conf.iterations.PCDATA)
+        except ValueError:
+            self.iterations = 1
+
         self.testDistributor = self.__getDistributor()
 
     def continueIterations(self):
         """ Returns true if more iterations should follow """
-        if self.currentIteration > 0: self.currentIteration += 1
-        if 0 < self.iterations < self.currentIteration: return False
+        if self.currentIteration > 0:
+            self.currentIteration += 1
+
+        if 0 < self.iterations < self.currentIteration:
+            return False
+
         self.testDistributor = self.__getDistributor()
         TestDistributor.ITERATION_EVENT(self.currentIteration)
         return True
-        
+
     def __getDistributor(self):
-        mod = __import__(self.distributionModule, fromlist = [ self.distributionAlgorithmCls ])
+        mod = __import__(self.distributionModule,
+                         fromlist=[self.distributionAlgorithmCls])
         return getattr(mod, self.distributionAlgorithmCls)(copy.deepcopy(self.source))
 
     def getNonFinishedTests(self):
@@ -49,7 +59,7 @@ class TestDistributor(object):
         @return: List of non executed tests
         """
         nonExecutedTests = []
-    
+
         for test in self.source.getTests():
             if self.testDistributor.executed(self.peers, test):
                 continue
@@ -60,7 +70,7 @@ class TestDistributor(object):
 
     def getTest(self, peer):
         '''
-        The private method handler, which is executed, when the 
+        The private method handler, which is executed, when the
         peer update signal is received. If the peer is active and
         the source exists, the method sends the test to the
         received peer.
@@ -70,7 +80,8 @@ class TestDistributor(object):
 
     def peekTest(self, peer):
         """ Check to see if any tests need executing """
-        return  self.testDistributor.peekSuitableTest(peer, self.peers, self.source)
+        return  self.testDistributor.peekSuitableTest(
+            peer, self.peers, self.source)
 
     def __getScheduledTestForPeer(self, peer):
         """ Find next stage for peer, if it exists """
@@ -78,8 +89,11 @@ class TestDistributor(object):
 
     def __assignTestForPeer(self, peer):
         """ Assign a test that matches the capabilities of the given peer """
-        if len(self.source.groups or []) == 0: return None
-        test, _ = self.testDistributor.assignSuitableTest(peer, self.peers, self.source)
+        if len(self.source.groups or []) == 0:
+            return None
+
+        test, _ = self.testDistributor.assignSuitableTest(
+            peer, self.peers, self.source)
         return test
 
     def getDistributionHistory(self):

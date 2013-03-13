@@ -1,4 +1,5 @@
-from Utils.Configuration import ConfigurationManager
+from yates.Utils.Configuration import ConfigurationManager
+
 import re
 
 class TestFilter(object):

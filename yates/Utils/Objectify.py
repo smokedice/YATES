@@ -1,11 +1,12 @@
-from Utils.Logging import LogManager
+from yates.Utils.Logging import LogManager
 
 from StringIO import StringIO
 from traceback import format_exc
 from types import StringTypes
 from minixsv import pyxsval
 from sys import stdout
-import hashlib, os
+import hashlib
+import os
 
 from gnosis.xml.objectify._objectify import make_instance, tagname, attributes, \
     content
@@ -18,17 +19,17 @@ class Objectify(object):
     constructor, then accessing Objectify
     by using the .instance attribute
     @param xml: XML file path
-    @param xsd: XSD file path 
-    @raise InvalidConfigurationXML: Non existent XML/XSD. Invalid formatted files 
+    @param xsd: XSD file path
+    @raise InvalidConfigurationXML: Non existent XML/XSD. Invalid formatted files
     """
 
     KWARGS = {
-      "xmlIfClass"      : pyxsval.XMLIF_ELEMENTTREE,
-      "warningProc"     : pyxsval.PRINT_WARNINGS,
-      "errorLimit"      : 200,
-      "verbose"         : 0,
-      "useCaching"      : 0,
-      "processXInclude" : 0
+        "xmlIfClass": pyxsval.XMLIF_ELEMENTTREE,
+        "warningProc": pyxsval.PRINT_WARNINGS,
+        "errorLimit": 200,
+        "verbose": 0,
+        "useCaching": 0,
+        "processXInclude": 0
     }
 
     def __init__(self, xml, xsd):
@@ -39,12 +40,12 @@ class Objectify(object):
         self.xsdFile = os.path.abspath(xsd)
 
         if not os.path.exists(self.xmlFile) or not os.path.exists(self.xsdFile):
-            raise Exception("Given Files: %s - %s"
-                % (self.xmlFile, self.xsdFile))
+            raise Exception("Given Files: %s - %s" % (self.xmlFile, self.xsdFile))
 
         successfulLoad, xmlHash, xsdHash = self.__loadFromCache(xml, xsd)
 
-        if not successfulLoad: # Hashes are incorrect
+        if not successfulLoad:
+            # Hashes are incorrect
             self.__loadAndValidate(xml, xsd, xmlHash, xsdHash)
 
     def __loadFromCache(self, xml, xsd):
@@ -71,17 +72,18 @@ class Objectify(object):
 
             while True:
                 data = xmlFile.read(4096)
-                if not data: break
+                if not data:
+                    break
                 shaHash.update(hashlib.sha1(data).hexdigest())
 
         return shaHash.hexdigest()
 
     def __loadAndValidate(self, xml, xsd, xmlHash, xsdHash):
-        try: # Validate the config file
-            pyxsval.parseAndValidate(\
-                 inputFile = xml,
-                 xsdFile = xsd,
-                 **Objectify.KWARGS)
+        try:
+            # Validate the config file
+            pyxsval.parseAndValidate(
+                inputFile=xml, xsdFile=xsd,
+                **Objectify.KWARGS)
         except Exception:
             raise Exception(format_exc())
 
@@ -133,21 +135,22 @@ class Objectify(object):
             xsd = "".join(xsdBuffer.readlines())
         orgCwd = os.getcwd()
 
-        try: # Validate the config file
+        try:
+            # Validate the config file
             cwd = os.path.sep.join(self.xmlFile.split(os.path.sep)[:-1])
             os.chdir(cwd)
 
             pyxsval.parseAndValidateXmlInputString(
-                inputText = xml,
-                xsdText = xsd,
-                validateSchema = 1,
+                inputText=xml, xsdText=xsd,
+                validateSchema=1,
                 **Objectify.KWARGS)
         except Exception:
             self.logger.error("Error occurred within %s" % cwd)
             raise Exception(format_exc())
-        finally: os.chdir(orgCwd)
+        finally:
+            os.chdir(orgCwd)
 
-    def __write_xml(self, o, out = stdout):
+    def __write_xml(self, o, out=stdout):
         """ Serialize an _XO_ object back into XML """
         out.write("<%s" % tagname(o))
         for attr in attributes(o):
@@ -157,6 +160,7 @@ class Objectify(object):
         for node in content(o):
             if type(node) in StringTypes:
                 out.write(node)
-            else: self.__write_xml(node, out = out)
+            else:
+                self.__write_xml(node, out=out)
         out.write("</%s>" % tagname(o))
         return out

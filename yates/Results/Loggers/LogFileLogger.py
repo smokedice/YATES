@@ -1,6 +1,6 @@
-from Domain.States import TestState as TestStateValues
-from Utils import Network
-from Domain.States import PeerState
+from yates.Domain.States import TestState as TestStateValues
+from yates.Utils import Network
+from yates.Domain.States import PeerState
 
 import time, os, math, datetime, sys, StringIO
 from Queue import Empty
@@ -28,7 +28,7 @@ class LogFileLogger(object):
         os.path.exists(logFileLoc):
             mode = 'a'
         else: mode = 'w'
-           
+
         self.logFile = open(logFileLoc, mode, 0)
         self._log_message("TAS Version: %s\n" % os.environ['TAS_VERSION'])
         self._log_message("Execution Description: %s\n" % ",".join(description))
@@ -79,7 +79,7 @@ class LogFileLogger(object):
 
                 if i + 1 < length: buff.write(', ')
                 elif i + 1 == length: buff.write('\n')
-                
+
             self._log_message(buff.getvalue())
             buff.close()
 
@@ -97,8 +97,8 @@ class LogFileLogger(object):
         # TODO: BUG: if execution is over 31 days this will fail
         sec = datetime.timedelta(0, time.time() - self.startTime)
         d = datetime.datetime(1,1,1) + sec
-        taken = ('%d day(s), %d hour(s), %d minute(s) and %d second(s)' 
+        taken = ('%d day(s), %d hour(s), %d minute(s) and %d second(s)'
             %(d.day-1, d.hour, d.minute, d.second))
-    
+
         self._log_message('Execution finished, taking %s\n' % taken)
         self.logFile.close()

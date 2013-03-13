@@ -1,5 +1,6 @@
-from Results.Model.Peer import Peer
-from Results.Model.ModelUtils import DateTimeField, ResultBaseModel
+from yates.Results.Model.Peer import Peer
+from yates.Results.Model.ModelUtils import DateTimeField, ResultBaseModel
+
 from peewee import PrimaryKeyField, ForeignKeyField, TextField
 
 class PeerStates(ResultBaseModel):

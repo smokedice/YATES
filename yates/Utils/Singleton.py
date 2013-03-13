@@ -1,5 +1,6 @@
 import weakref
 
+
 class Singleton(object):
     def __new__(cls, *args, **kwargs):
         cls._instanceLock.acquire()
@@ -22,7 +23,7 @@ class Singleton(object):
 
         try:
             if cls.hasInstance() and \
-            hasattr(cls._instance, "shutdown"):
+                    hasattr(cls._instance, "shutdown"):
                 cls._instance.shutdown()
             cls._instance = None
         finally:
@@ -43,6 +44,6 @@ class Singleton(object):
         cls._instanceLock.acquire()
 
         try:
-            return cls._instance != None
+            return cls._instance is not None
         finally:
             cls._instanceLock.release()

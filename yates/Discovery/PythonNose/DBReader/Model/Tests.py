@@ -1,4 +1,4 @@
-from Results.Model.ModelUtils import MasterBaseModel
+from yates.Results.Model.ModelUtils import MasterBaseModel
 from peewee import PrimaryKeyField, TextField, IntegerField, BooleanField
 
 class Tests(MasterBaseModel):

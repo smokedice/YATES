@@ -8,7 +8,7 @@
             <location>./master.sqlite3</location>
         </DatabaseReader>
         <SourceLocation>
-            <testRoot>/home/smoky/Documents/Workspace/TASv3/Code/tests/HWIntegration/tests/quickTests/tests</testRoot>
+            <testRoot>/home/smoky/Workspace/NewEnvServerIntegration</testRoot>
             <testPath>oem_tests</testPath>
         </SourceLocation>
     </PythonNose>

@@ -1,10 +1,10 @@
-from Peer import Peer
-from Network.UDP import UDPServer
-from Utils.Configuration import ConfigurationManager 
-from Utils.Logging import LogManager
-from TestDistribution.TestDistributor import TestDistributor
-from TestGather.TestGatherManager import TestGatherManager
-from Results.ResultWorker import ResultWorker
+from yates.Peer import Peer
+from yates.Network.UDP import UDPServer
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Utils.Logging import LogManager
+from yates.TestDistribution.TestDistributor import TestDistributor
+from yates.TestGather.TestGatherManager import TestGatherManager
+from yates.Results.ResultWorker import ResultWorker
 
 import os, subprocess, signal, tempfile, time, sys, traceback, shutil, threading, multiprocessing
 from multiprocessing import Queue
@@ -44,7 +44,7 @@ class ExecutionOrganiser(object):
         heartBeats = self.udpServer.getHeartBeats(self.udpQueue.qsize())
         self.__processHeartBeats(heartBeats)
         if len(self.peers.keys()) == 0: return False
-        
+
         if all(self.__processPeers(heartBeats)):
             toContinue = self.testDistributor.continueIterations()
             if not toContinue: return True
@@ -70,13 +70,13 @@ class ExecutionOrganiser(object):
                 peer = Peer.createPeer(ipAddr, self.httpPort, macAddr, randomBits,
                     self.testDistributor, self.resultWorker)
                 if peer: self.peers[macAddr] = peer
- 
+
     def _go(self):
         self.testGather = TestGatherManager(self.tmpDir)
         source, description = self.testGather.gatherTests()
         self.testDistributor = TestDistributor(self.peers, source)
         self.resultWorker = ResultWorker(self.testGather.getPackDetails(), source)
-   
+
     def _shutdown(self, *args):
         """ Teardown all components and a graceful shutdown """
         with self.shutdownLock:

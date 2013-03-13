@@ -1,14 +1,15 @@
-from Master.Domain.CheckPeerState import CheckPeerState
-from Master.Domain.ComponentCommand import ComponentCommand
-from Common.CommonSignals.Enums.ActivePeerState import ActivePeerState
-from Common.CommonSignals.FServiceInfo import FServiceInfo
-from Common.CommonSignals.PeerStateUpdate import PeerStateUpdate
-from Common.CommonSignals.TeardownStage import TeardownStage
-from Common.CommonSignals.TeardownComplete import TeardownComplete
-from Common.CommonSignals.ComponentSetupResult import ComponentSetupResult
-from Master.MasterBusinessLogic.TestEnvironment.PeerState import PeerState
-from Common.SignalExchangeHub.SignalExchangeHub import SignalExchangeHub
-from Common.TASUtils.Singleton import Singleton
+from yates.Master.Domain.CheckPeerState import CheckPeerState
+from yates.Master.Domain.ComponentCommand import ComponentCommand
+from yates.Common.CommonSignals.Enums.ActivePeerState import ActivePeerState
+from yates.Common.CommonSignals.FServiceInfo import FServiceInfo
+from yates.Common.CommonSignals.PeerStateUpdate import PeerStateUpdate
+from yates.Common.CommonSignals.TeardownStage import TeardownStage
+from yates.Common.CommonSignals.TeardownComplete import TeardownComplete
+from yates.Common.CommonSignals.ComponentSetupResult import ComponentSetupResult
+from yates.Master.MasterBusinessLogic.TestEnvironment.PeerState import PeerState
+from yates.Common.SignalExchangeHub.SignalExchangeHub import SignalExchangeHub
+from yates.Common.TASUtils.Singleton import Singleton
+
 from threading import Thread, RLock
 import time
 

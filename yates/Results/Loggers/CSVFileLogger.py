@@ -1,6 +1,6 @@
-from Domain.States import TestState as TestStateValues
-from Utils import Network
-from Domain.States import PeerState
+from yates.Domain.States import TestState as TestStateValues
+from yates.Utils import Network
+from yates.Domain.States import PeerState
 
 import time, os, math, datetime
 from Queue import Empty
@@ -20,7 +20,7 @@ class CSVFileLogger(object):
         if config.clear == 'false' or \
         os.path.exists(logFileLoc):
             self.logFile = open(logFileLoc, 'a', 0)
-        else: 
+        else:
             self.logFile = open(logFileLoc, 'w', 0)
             self.logFile.write("ipAddr,macAddr,testId,startTime,duration,now,result\n")
 

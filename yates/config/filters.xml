@@ -8,12 +8,12 @@
             <value>youviewreview</value>
         </values>
     </TestFilter>
-    <TestFilter enabled="false">
+    <TestFilter enabled="true">
         <direction>include</direction>
         <parameter>testId</parameter>
         <values>
-            <value>101</value>
-            <value>102</value>
+            <value>4000</value>
+            <value>515</value>
         </values>
     </TestFilter>
     <TestPackFilter enabled="false">

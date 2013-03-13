@@ -1,18 +1,21 @@
-from Utils.Objectify import Objectify
-from Utils.Singleton import Singleton
-from Utils.Logging import LogManager
+from yates.Utils.Objectify import Objectify
+from yates.Utils.Singleton import Singleton
+from yates.Utils.Logging import LogManager
+
 from glob import glob
 from threading import RLock
 import os
 
+
 class ConfigurationManager(Singleton):
     _instance = None
     _instanceLock = RLock()
-    
+
     def _setup(self, cwd=None):
         orgCwd = os.getcwd()
         existingCwd = os.path.join(os.getcwd(), 'config')
-        if not cwd: cwd = existingCwd
+        if not cwd:
+            cwd = existingCwd
         self.logger = LogManager().getLogger(self.__class__.__name__)
 
         try:
@@ -23,7 +26,8 @@ class ConfigurationManager(Singleton):
             for xml in glob("*.xml"):
                 name = xml.split("/")[-1].split(".")[0]
                 xsd = "validation/%s.xsd" % name
-                if not os.path.exists(xsd): continue
+                if not os.path.exists(xsd):
+                    continue
                 self.loadConfiguration(xml, xsd)
         finally:
             os.chdir(orgCwd)
@@ -35,17 +39,14 @@ class ConfigurationManager(Singleton):
         @param xsd: XSD file to validate the XML
         """
         if not xml.endswith(".xml") or not os.path.exists(xml):
-            raise Exception("Invalid XML File: %s"
-                % os.path.realpath(xml))
+            raise Exception("Invalid XML File: %s" % os.path.realpath(xml))
 
         if not xsd.endswith(".xsd") or not os.path.exists(xsd):
-            raise Exception("Invalid XSD File: %s"
-                % os.path.realpath(xsd))
+            raise Exception("Invalid XSD File: %s" % os.path.realpath(xsd))
 
         name = xml.split(os.path.sep)[-1][:-4]
         if name in self.xmls.keys():
-            raise Exception("Duplicate XML File: %s"
-                % os.path.realpath(xml))
+            raise Exception("Duplicate XML File: %s" % os.path.realpath(xml))
 
         xmlObject = Objectify(xml, xsd)
         self.xmls[name.lower()] = xmlObject

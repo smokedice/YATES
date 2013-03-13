@@ -4,8 +4,8 @@
     <iterations>1</iterations>
     <defaultTimeout>300</defaultTimeout>
     <distributionAlgorithm>ExecutionOnEachBoxEvenly</distributionAlgorithm>
-    <rebootPerTest>false</rebootPerTest>
-    <rebootNewBoxes>false</rebootNewBoxes>
+    <rebootPerTest>true</rebootPerTest>
+    <rebootNewBoxes>true</rebootNewBoxes>
     <manualInspection>false</manualInspection>
     <stopWhenAllDead>true</stopWhenAllDead>
     <scripts enabled="false">/tmp/tools</scripts>

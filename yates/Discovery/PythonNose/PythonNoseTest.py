@@ -1,19 +1,13 @@
-from Domain.States import TestState
-from Utils.Envcat import envcatRequest
-from Utils import Network
-from Utils.Configuration import ConfigurationManager
+from yates.Domain.States import TestState
 
-import os, sys, time, traceback
-from multiprocessing import Queue
-from multiprocessing.queues import Empty
 
 class PythonNoseTest(object):
     __STOP_ENV_SERVER_CMD = 'play'
 
-    def __init__(self   , description = '' , iterations = 0  , environment = '',
-        testClass = None, testMethod = ''  , testFile = ''   , testId = 0,
-        testStatus = '' , testTimeout = 500, invalid = False ,
-        manualInspection = False, docstrings = [''], srcLoc = None):
+    def __init__(self, description='', iterations=0, environment='',
+                 testClass=None, testMethod='', testFile='', testId=0,
+                 testStatus='', testTimeout=500, invalid=False,
+                 manualInspection=False, docstrings=[''], srcLoc=None):
 
         self.description = description
         self.iterations = int(iterations)
@@ -34,7 +28,8 @@ class PythonNoseTest(object):
         self.error = ''
         self.executed = False
         self.uniqueId = None
-        self.testStage = False # Used for reboot helper
+        # Used for reboot helper
+        self.testStage = False
         self.iteration = 1
         self.srcLoc = srcLoc
 
@@ -50,7 +45,7 @@ class PythonNoseTest(object):
     def __eq__(self, other):
         for item in self.__items:
             if not hasattr(other, item) or \
-            getattr(other, item) != getattr(self, item):
+                    getattr(other, item) != getattr(self, item):
                 return False
         return True
 
@@ -59,8 +54,4 @@ class PythonNoseTest(object):
             else "%s.%s" % (self.testClass, self.testMethod)
 
     def getExecutionString(self):
-        return "PythonNoseScript %s:%s" %(self.testFile, self.combineClassMethod())
-
-    def __stopEnvServer(self):
-        envcatRequest(self.__envServerHost,
-            self.__envServerPort, self.__STOP_ENV_SERVER_CMD)
+        return "PythonNoseScript %s:%s" % (self.testFile, self.combineClassMethod())

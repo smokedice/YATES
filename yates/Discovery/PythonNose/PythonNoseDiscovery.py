@@ -1,5 +1,5 @@
-from Discovery.PythonNose.DBReader.DatabaseReader import SAPIDatabaseReader
-from Discovery.PythonNose.TestDiscovery.TestDiscoveryWorker import TestDiscoveryWorker
+from yates.Discovery.PythonNose.DBReader.DatabaseReader import SAPIDatabaseReader
+from yates.Discovery.PythonNose.TestDiscovery.TestDiscoveryWorker import TestDiscoveryWorker
 import os
 
 class PythonNoseDiscovery(object):

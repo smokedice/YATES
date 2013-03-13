@@ -53,9 +53,9 @@ class _Client(object):
 
 
 class keystoreClient(_Client):
-    
+
     """A simple key=value pair store"""
-    
+
     URL_PREFIX = "/keystore"
     NAME = "keystore"
 
@@ -86,33 +86,33 @@ class keystoreClient(_Client):
 
 
 class statusClient(_Client):
-    
+
     """Query and manage the envserver status"""
-    
+
     URL_PREFIX = "/status"
     NAME = "status"
 
     def status(self, ):
-        
+
         return self._POST("status", {}, "data")
 
     def stopall(self, ):
-        """ Stop all services 
+        """ Stop all services
         """
         return self._POST("stopall", {}, "data")
 
     def capabilities(self, ):
-        """ Capabilities of all modules 
+        """ Capabilities of all modules
         """
         return self._POST("capabilities", {}, "capabilities")
 
     def latest_id(self, ):
-        """ Get the latest ID within the logs 
+        """ Get the latest ID within the logs
         """
         return self._POST("latest_id", {}, "data")
 
     def clear_logs(self, ):
-        """ Remove all logs from envserver 
+        """ Remove all logs from envserver
         """
         return self._POST("clear_logs", {}, "data")
 
@@ -125,13 +125,13 @@ class statusClient(_Client):
         """Return a list of system event log items, ordered by the date they occurred.
     Only logs items with an ID greater than <since> are returned.
     No more than <limit> items are returned.
-    
+
         """
         return self._POST("get_logs", {"since": since, "limit": limit}, "data")
 
 
 class ipstreamClient(_Client):
-    
+
     URL_PREFIX = "/ipstream"
     NAME = "ipstream"
 
@@ -146,29 +146,29 @@ class ipstreamClient(_Client):
         return self._POST("stop", {"group": group, "port": port}, "data")
 
     def stopall(self, ):
-        
+
         return self._POST("stopall", {}, "data")
 
     def conflicts(self, ):
-        
+
         return self._POST("conflicts", {}, "data")
 
     def availablegroups(self, ):
-        
+
         return self._POST("availablegroups", {}, "groups")
 
     def listen(self, ):
-        
+
         return self._POST("listen", {}, "data")
 
 
 class modulatorsClient(_Client):
-    
+
     URL_PREFIX = "/modulators"
     NAME = "modulators"
 
     def status(self, ):
-        
+
         return self._POST("status", {}, "status")
 
     def play(self, request):
@@ -177,7 +177,7 @@ class modulatorsClient(_Client):
         return self._POST("play", {"request": request}, "data")
 
     def stop(self, ):
-        
+
         return self._POST("stop", {}, "data")
 
     def streaminfo(self, name):
@@ -186,11 +186,11 @@ class modulatorsClient(_Client):
         return self._POST("streaminfo", {"name": name}, "streaminfo")
 
     def capabilities(self, ):
-        
+
         return self._POST("capabilities", {}, "capabilities")
 
     def modconfig(self, ):
-        
+
         return self._POST("modconfig", {}, "modconfig")
 
     def uploadconfig(self, config_file, file_name):
@@ -198,20 +198,20 @@ class modulatorsClient(_Client):
         """
         with open(os.path.abspath(config_file), 'r') as f:
             config_file = '\n'.join(f.readlines())
-        
+
         return self._POST("uploadconfig", {"file_name": file_name, "config_file": config_file}, "status")
 
     def usedcapabilities(self, ):
-        
+
         return self._POST("usedcapabilities", {}, "capabilities")
 
     def active(self, ):
-        
+
         return self._POST("active", {}, "active")
 
 
 class hubClient(_Client):
-    
+
     URL_PREFIX = "/hub"
     NAME = "hub"
 
@@ -252,7 +252,7 @@ class Client(object):
     def hub(self):
         return hubClient(self._server, self._port)
 
-    
+
 def main():
     parser = argparse.ArgumentParser(
         usage= '%(prog)s module command [arguments]',

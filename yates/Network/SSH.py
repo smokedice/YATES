@@ -1,4 +1,4 @@
-from Utils.Logging import LogManager
+from yates.Utils.Logging import LogManager
 
 import time, sys, subprocess, re
 from Queue import Empty
@@ -87,7 +87,7 @@ class CatChannel(channel.SSHChannel):
         d = self.conn.sendRequest(self, 'exec',
             common.NS(cmd), wantReply = 1)
         d.addCallback(self.dataSent)
-        
+
     def dataSent(self, d):
         self.details.status = Status.SENT
         for cmd in self.details.cmdsToSend:
@@ -186,7 +186,7 @@ class SSHClient(Process):
         if ping.returncode != 0 and reactor.running:
             if self.cmdsSend == False:
                 self.status = Status.FAILURE
-            reactor.stop() 
+            reactor.stop()
 
     def cleanup(self):
         self.queue.close()

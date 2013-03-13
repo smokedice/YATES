@@ -1,12 +1,12 @@
-from Results.Loggers.FileSystemLogger import FileSystemLogger
-from Results.Loggers.SQLLiteLogger import SqlLiteLogger
-from Results.Loggers.LogFileLogger import LogFileLogger
-from Results.Loggers.CSVFileLogger import CSVFileLogger
-from Results.Loggers.TRMSLogger import TrmsLogger
-from Utils.Configuration import ConfigurationManager
-from Utils.Logging import LogManager
-from Utils.Singleton import Singleton
-from events import get_event_handler
+from yates.Results.Loggers.FileSystemLogger import FileSystemLogger
+from yates.Results.Loggers.SQLLiteLogger import SqlLiteLogger
+from yates.Results.Loggers.LogFileLogger import LogFileLogger
+from yates.Results.Loggers.CSVFileLogger import CSVFileLogger
+from yates.Results.Loggers.TRMSLogger import TrmsLogger
+from yates.Utils.Configuration import ConfigurationManager
+from yates.Utils.Logging import LogManager
+from yates.Utils.Singleton import Singleton
+from yates.events import get_event_handler
 
 from threading import RLock
 import os, time
@@ -27,8 +27,8 @@ class ResultWorker(object):
         self.loggers = []
         self.trmsLogger = None
         self.uniqueID = 0
-       
-        resdir = "%s-%s-%s" % (ResultWorker.RESULT_PREFIX, 
+
+        resdir = "%s-%s-%s" % (ResultWorker.RESULT_PREFIX,
             time.strftime("%Y%m%d%H%M"), str(os.getegid()))
 
         self.location = os.path.join(self.config.location, resdir)
@@ -74,7 +74,7 @@ class ResultWorker(object):
     def _report_state(self, peer, comment = None):
         for logger in self.loggers:
             logger.logPeerState(peer, comment)
- 
+
     def _report_test_result(self, test, files, peer):
         """ Store a tests content onto the file system """
         test.uniqueId = str(self.uniqueID)

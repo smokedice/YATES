@@ -1,6 +1,6 @@
-from Domain.States import TestState
-from Utils import Network
-from Utils.Configuration import ConfigurationManager
+from yates.Domain.States import TestState
+from yates.Utils import Network
+from yates.Utils.Configuration import ConfigurationManager
 
 import os, sys, time, traceback
 from multiprocessing import Queue
