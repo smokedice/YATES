@@ -79,26 +79,25 @@ class TestGatherManager(object):
             content[creator.execScriptName] = creator.execScriptLocation
             content[creator.srcName] = creator.srcLocation
 
-        testIds = []
-        for test in tests:
-            if test.testId not in testIds:
-                continue
-            raise Exception('Duplicate test ID %s' % test.testId)
-
-        if len(tests) == 0:
-            raise Exception('No tests found!')
-        del testIds
-
         defGroup = Group(self.DEFAULT_GROUP_NAME,
                          self.DEFAULT_GROUP_DESC, tests)
         source = Source(self.DEFAULT_LOCATION, defGroup)
 
         descBuffer = StringIO()
         for testFilter in self.__testFilters:
-            source = testFilter.filterTests(source)
+            testFilter.filterTests(source)
             descBuffer.write(testFilter.getAppliedFilterDescription())
         desc = descBuffer.getvalue()
         descBuffer.close()
+
+        if len(tests) == 0:
+            raise Exception('No tests found!')
+
+        testIds = set()
+        for test in tests:
+            if test.testId in testIds:
+                raise Exception('Duplicate test ID %s' % test.testId)
+            testIds.add(test.testId)
 
         # TODO: where does this come from?
         testSuiteName = "FIXME"
